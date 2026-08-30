@@ -1,0 +1,24 @@
+[project]
+name = "g2c"
+version = "0.1.0"
+description = "GTraffic2Crash: forecasting town-scale BEV traffic occupancy to anticipate crashes"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch==2.13.0",
+    "lightning>=2.5",
+    "numpy>=2.1",
+    "scipy>=1.14",
+    "einops>=0.8",
+    "wandb>=0.19",
+    "matplotlib>=3.9",
+    "pillow>=11",
+    "imageio[ffmpeg]>=2.36",
+    "pyyaml>=6.0",
+    "rich>=13.9",
+    "tqdm>=4.67",
+    "pandas>=2.2",
+    "torchmetrics>=1.6",
+]
+
+[tool.uv]
+package = false

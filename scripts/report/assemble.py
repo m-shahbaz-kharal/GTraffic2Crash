@@ -16,7 +16,7 @@ def load_run(name):
     return [json.loads(l) for l in open(p) if l.strip()]
 
 def results_block():
-    runs = {n: load_run(n) for n in ("pilot_small", "base_v1")}
+    runs = {n: load_run(n) for n in ("base_v1", "pilot_small")}
     runs = {k: v for k, v in runs.items() if v}
     if not runs:
         return ("Training is under way", """
@@ -82,7 +82,16 @@ def results_block():
     probabilistic occupancy forecast, and it is exactly the thing the design set out
     to measure rather than hide. It is also the handle for the documented next step:
     a generative refinement stage sharpens precisely this.</p></div>""")
-    return "Against the baselines", table + per_h + note + sc
+    caveat = """<div class="col footnote"><p><b>On what these numbers are.</b>
+    Every figure here comes from each run's own validation, on episodes it never
+    trained on -- the split is by episode, never by window, because windows from
+    one episode overlap heavily and share the same vehicles. A standalone
+    evaluation of the pilot against a re-derived split was run and deliberately
+    discarded: the pilot trained on 129 episodes while 355 were on disk by then,
+    so the "held-out" set overlapped its training data. Those numbers looked
+    better and meant nothing. Runs now record their exact split so this cannot
+    happen again.</p></div>"""
+    return "Against the baselines", table + per_h + note + sc + caveat
 
 heading, body = results_block()
 html = open(os.path.join(SP, "head.html")).read()

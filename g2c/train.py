@@ -278,7 +278,8 @@ class Forecaster(L.LightningModule):
         d = os.path.join(self.output_dir, "reports")
         os.makedirs(d, exist_ok=True)
         rec = {"epoch": self.current_epoch, "step": self.global_step,
-               "wall_seconds": round(time.time() - self._t0, 1), "headline": head,
+               "wall_seconds": round(time.time() - self._t0, 1),
+               "frame_dt_s": self.hparams.frame_dt_s, "headline": head,
                "by_horizon": {k: list(map(float, v)) for k, v in named["model"].items()},
                "baselines": {n: {k: list(map(float, v)) for k, v in m.items()}
                              for n, m in named.items() if n != "model"},

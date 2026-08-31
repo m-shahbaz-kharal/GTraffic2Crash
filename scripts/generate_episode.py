@@ -202,8 +202,25 @@ def main():
     settings.max_substeps = 16
     world.apply_settings(settings)
 
-    tm_port = args.tm_port or (args.port + 6000)
-    tm = client.get_trafficmanager(tm_port)
+    # The Traffic Manager binds its own RPC port, and the previous episode's is
+    # often still in TIME_WAIT when the next one starts on the same server.  That
+    # cost 48 of 400 episodes on the first run, all with
+    # "failed to create because of bind error".  Walk a small range until one
+    # binds rather than losing the episode.
+    base_tm = args.tm_port or (args.port + 6000)
+    tm, tm_port = None, None
+    for offset in range(0, 40):
+        try:
+            tm_port = base_tm + offset
+            tm = client.get_trafficmanager(tm_port)
+            break
+        except RuntimeError as e:
+            if "bind" not in str(e).lower() or offset == 39:
+                raise
+            print(f"[gen] traffic manager port {tm_port} busy, trying the next",
+                  flush=True)
+            time.sleep(1.0)
+    print(f"[gen] traffic manager on port {tm_port}", flush=True)
     tm.set_synchronous_mode(True)
     tm.set_random_device_seed(seed)
 

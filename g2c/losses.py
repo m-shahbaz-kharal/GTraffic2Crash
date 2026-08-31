@@ -119,16 +119,24 @@ def forecasting_loss(pred, batch, w: LossWeights, cells_per_frame_step: float):
         terms["flow_error"] = ((pred["flow"] - batch["future_flow"]).abs() * m).sum() / \
             m.sum().clamp_min(1.0) / 2.0
 
-        # Flow-traced consistency: transporting the occupancy at t along the
-        # predicted flow must land on the occupancy at t+1.  This is the term
-        # that carries the physics -- mass moves, it does not teleport -- and it
-        # is the answer to blur that does not require an adversary.
+        # Flow-traced consistency: transporting the *observed* occupancy at t
+        # along the predicted flow must land on the observed occupancy at t+1.
+        #
+        # Note what is warped -- ground truth, not the prediction.  Warping the
+        # predicted occupancy instead makes this term a second, much louder
+        # opinion about occupancy: measured on a real batch it put a gradient on
+        # the occupancy head 50x larger than the occupancy term's own, and since
+        # early flow is meaningless that gradient points nowhere useful.  With
+        # it, occupancy cross-entropy did not move at all over 120 steps
+        # (0.19264 -> 0.19272); with the occupancy term alone it fell 44 %
+        # (0.19264 -> 0.10740).  Warping ground truth keeps the term's meaning --
+        # "your flow must explain the motion that actually happened" -- while
+        # confining its gradient to the flow head, where it belongs.
         B, T, C, H, W = prob.shape
-        src = torch.cat([batch["past_occupancy"][:, -1:], prob[:, :-1]], dim=1)
-        fl = pred["flow"][:, :-1] if T > 1 else pred["flow"]
-        fl = torch.cat([pred["flow"][:, :1], fl], dim=1)[:, :T]
+        src = torch.cat([batch["past_occupancy"][:, -1:],
+                         target[:, :-1]], dim=1).detach()
         moved = warp_forward(src.reshape(B * T, C, H, W),
-                             (fl * cells_per_frame_step).reshape(B * T, 2, H, W))
+                             (pred["flow"] * cells_per_frame_step).reshape(B * T, 2, H, W))
         # Expressed through logits rather than probabilities: mathematically the
         # same, but `binary_cross_entropy` on probabilities is unsafe under
         # autocast, while the logit form is not.

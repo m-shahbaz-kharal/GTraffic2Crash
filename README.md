@@ -69,17 +69,17 @@ given the *ground-truth* velocity field -- an advantage no deployed system has.
 
 | forecast | mean soft-IoU | +0.5 s | +5.0 s | BIAS |
 |---|---|---|---|---|
-| **model** (26 M pilot, step 6.5k) | **0.629** | **0.831** | **0.471** | 1.09 |
+| **model** (26 M, near end of training) | **0.758** | **0.900** | **0.623** | 1.03 |
 | persistence | 0.423 | 0.547 | 0.312 | 1.00 |
 | constant velocity, oracle flow | 0.479 | 0.819 | 0.307 | 0.98 |
 | constant velocity, estimated flow | 0.361 | 0.604 | 0.200 | 1.00 |
 
-The model matches the oracle baseline at half a second *without being told the
-true velocities*, and beats the best baseline by **51 % at the five-second
-horizon** -- which is where a learned model has to earn its keep, and where the
-gap keeps widening. BIAS fell from 1.55 to 1.09 without intervention, and it does
-not fail where it matters: collision windows score 0.629 against nominal
-traffic's 0.626.
+The model beats the oracle baseline at *every* horizon including half a second
+-- where the oracle is handed the true velocity of every vehicle -- and at five
+seconds it reaches **exactly double** the best baseline (0.623 against 0.312).
+BIAS stays within 7 % of perfect across the whole horizon, having started at
+1.55, and it does not fail where it matters: collision windows score 0.753
+against nominal traffic's 0.759.
 
 ### Does the forecast show a crash coming?
 

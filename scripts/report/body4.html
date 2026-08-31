@@ -5,6 +5,14 @@
   </div>
   __RESULTS_BODY__
   <figure>
+    <img alt="Three panels: forecast quality against the three baselines over training steps, BIAS falling towards one, and quality decaying with forecast horizon for the model and each baseline." src="__PROGRESS__">
+    <figcaption><b>The right-hand panel is the result.</b> The model sits above every
+    baseline at every horizon, and the gap <em>widens</em> as the horizon extends &mdash;
+    which is the whole thesis. Oracle constant velocity is competitive at half a second
+    and collapses after two; persistence is flat and low throughout. The middle panel shows
+    BIAS falling from 1.55 to about 1.09 on its own, with no intervention.</figcaption>
+  </figure>
+  <figure>
     <img alt="Two rows, each showing the ground-truth town occupancy beside the model's forecast: one at plus 1.5 seconds and one at plus 5 seconds." src="__FORECAST__">
     <figcaption><b>The forecast, early in training.</b> Vehicles land on roads and the
     town's structure is respected from the first few hundred steps &mdash; the map priors

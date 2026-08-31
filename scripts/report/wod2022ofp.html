@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><script nonce="8P+ok3aDkYaoYzRuwVC7Fg==">window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{"ad_storage":"granted","ad_user_data":"granted","ad_personalization":"granted","analytics_storage":"granted","functionality_storage":"granted","personalization_storage":"granted","security_storage":"granted","wait_for_update":"500"});
+window.__rootConsentDefaultsSet = true;</script><title>Occupancy and Flow Prediction – 2022 – Waymo Open Dataset</title><link rel="icon" type="image/png" href="/favicon.png"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="theme-color" content="#ffffff"/><link rel="apple-touch-icon" href="/favicon.png"/><meta content="website" property="og:type"/><meta content="Waymo" property="og:site_name"/><meta content="summary_large_image" name="twitter:card"/><meta content="Occupancy and Flow Prediction – 2022 – Waymo Open Dataset" property="og:title"/><meta content="Occupancy and Flow Prediction – 2022 – Waymo Open Dataset" name="twitter:title"/><meta name="description" content/><meta content property="og:description"/><meta content name="twitter:description"/><meta content="@Waymo" name="twitter:site"/><meta content="en_US" property="og:locale"/><meta name="author" content="Waymo"/><meta name="robots" content="noindex"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link rel="preconnect" href="https://storage.googleapis.com"/><link rel="preconnect" href="https://lh3.googleusercontent.com"/><link rel="dns-prefetch" href="https://www.googletagmanager.com"/><link rel="dns-prefetch" href="https://www.gstatic.com"/><link rel="dns-prefetch" href="https://images.ctfassets.net"/><style nonce="8P+ok3aDkYaoYzRuwVC7Fg==">@layer base, component, template, overrides;</style><link rel="preload" href="/fonts/GT-Walsheim-Regular-subset.woff2" as="font" type="font/woff2" crossorigin/><link rel="preload" href="/fonts/GT-Walsheim-Medium-subset.woff2" as="font" type="font/woff2" crossorigin/><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700&amp;display=swap" media="print" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="/><script nonce="8P+ok3aDkYaoYzRuwVC7Fg==">(function(){var s=document.currentScript,l=s&&s.previousElementSibling;if(!l)return;function p(){l.media='all';}l.sheet?p():l.addEventListener('load',p,{once:true});})();</script><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700&amp;display=swap" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="/></noscript><script type="application/ld+json" nonce="8P+ok3aDkYaoYzRuwVC7Fg==">{"@context":"https://schema.org","@type":"Organization","name":"Waymo","url":"https://waymo.com","logo":"https://waymo.com/favicon.png","description":"Waymo is an autonomous driving technology company with a mission to be the most trusted driver. Waymo One is the first commercially available autonomous ride-hailing service.","foundingDate":"2009","parentOrganization":{"@type":"Organization","name":"Alphabet Inc.","url":"https://abc.xyz"},"sameAs":["https://twitter.com/Waymo","https://www.facebook.com/waymo","https://www.instagram.com/waymo","https://www.linkedin.com/company/waymo","https://www.youtube.com/waymo","https://en.wikipedia.org/wiki/Waymo"],"contactPoint":{"@type":"ContactPoint","contactType":"customer support","url":"https://waymo.com/contact"},"hasOfferCatalog":{"@type":"OfferCatalog","name":"Waymo Services","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Waymo One","description":"Autonomous ride-hailing service available in San Francisco, Phoenix, Los Angeles, and Austin.","provider":{"@type":"Organization","name":"Waymo"},"areaServed":[{"@type":"City","name":"San Francisco"},{"@type":"City","name":"Phoenix"},{"@type":"City","name":"Los Angeles"},{"@type":"City","name":"Austin"}]}}]},"areaServed":[{"@type":"City","name":"San Francisco","containedInPlace":{"@type":"State","name":"California"}},{"@type":"City","name":"Phoenix","containedInPlace":{"@type":"State","name":"Arizona"}},{"@type":"City","name":"Los Angeles","containedInPlace":{"@type":"State","name":"California"}},{"@type":"City","name":"Austin","containedInPlace":{"@type":"State","name":"Texas"}}],"knowsAbout":["Autonomous driving","Autonomous vehicles","Computer vision","LiDAR technology","Machine learning for driving","Ride-hailing","Robotaxi","Self-driving cars","Waymo Driver"]}</script><link rel="stylesheet" href="/assets/z41LlgUY.css" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="/><link rel="stylesheet" href="/assets/Cfvla6kb.css" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="/><script type="module" src="/assets/DXDWvevJ.min.js" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="></script><script type="module" src="/assets/BDEAzDrK2.min.js" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="></script><script type="module" src="/assets/EM-8a-8X2.min.js" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="></script><script type="module" src="/assets/DjL5sroU2.min.js" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="></script><script type="module" src="/assets/zlH_hadk2.min.js" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="></script><script type="module" src="/assets/CVU87iEL.min.js" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="></script><script type="module" src="/assets/DVLerB3s.min.js" nonce="8P+ok3aDkYaoYzRuwVC7Fg=="></script></head><body class="_variant:open_1tli5_2"><div id="root"><header class="_header_1y358_2 _logo:mono_1y358_155 _headerBlack_1y358_136"><w-safe-triangle data-direction="down"><w-header data-safe-triangle-container="true"><a href="#main" class="_skipToMain_1y358_279">Skip to main content</a><nav aria-label="Featured Waymo pages" class="_nav_1y358_118"><a href="/" aria-label="Home" class="_home_1y358_155"><div role="img" aria-label="Waymo Logo" class="_waymoLogo_noke6_1"><svg xmlns="http://www.w3.org/2000/svg" width="207" height="94" viewBox="0 0 207 94" fill="none"><path d="M59.7697 38.0558L56.1429 49.7763L52.4857 38.0558H49.2923L45.6656 49.7763L42.0084 38.0558H37.6365L43.9472 55.9367H47.3459L50.9042 44.6946L54.455 55.9367H57.8309L64.1416 38.0558H59.7697Z" fill="currentColor"></path><path d="M83.2867 55.9367L82.5948 53.7642H76.2308L75.5389 55.9367H71.1138L77.5081 38.0558H81.3174L87.7802 55.9291H83.2791L83.2867 55.9367ZM79.4242 43.1678L77.2268 50.5207H81.5683L79.4242 43.1678Z" fill="currentColor"></path><path d="M111.677 38.0558H106.842L103.032 45.082L99.2232 38.0558H94.3875L100.934 49.5788V55.9367H105.131V49.5788L111.677 38.0558Z" fill="currentColor"></path><path d="M139.832 55.9367H135.795V44.8541L131.933 55.9367H128.868L124.884 44.8541V55.9367H120.839V38.0634H125.622L130.404 50.4903L135.126 38.0634H139.832V55.9367Z" fill="currentColor"></path><path d="M149.778 46.9962C149.778 42.0968 153.306 37.6 159.259 37.6C165.212 37.6 168.717 42.0968 168.717 46.9962C168.717 51.8956 165.189 56.3924 159.259 56.3924C153.328 56.3924 149.778 51.8956 149.778 46.9962ZM164.498 46.9962C164.498 44.0566 162.506 41.3296 159.259 41.3296C156.012 41.3296 154.02 44.0642 154.02 46.9962C154.02 49.9282 155.989 52.6628 159.259 52.6628C162.528 52.6628 164.498 49.9282 164.498 46.9962Z" fill="currentColor"></path></svg></div></a><button id="hamburger-menu" type="button" aria-expanded="false" aria-controls="w-vqyylemi-main-nav" class="_hamburger_1y358_976"><div role="img" aria-label="Open menu" title="Open menu" class="_openMobileMenu_1y358_151"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 26H35V29H13V26Z" fill="currentColor"></path><path d="M13 18H35V21H13V18Z" fill="currentColor"></path></svg></div><div role="img" aria-label="Exit" title="Exit" class="_closeMobileMenu_1y358_152"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 15L32.5563 30.5563L30.435 32.6777L14.8787 17.1213L17 15Z" fill="#23233C"></path><path d="M15 31L30.5563 15.4437L32.6777 17.565L17.1213 33.1213L15 31Z" fill="#23233C"></path></svg></div></button><div id="w-vqyylemi-main-nav" data-main-nav="true" class="_mainNav_1y358_148"><ul class="_navLinks_1y358_425"><li data-safe-triangle-parent-id="0" class="_navLinkContainer_1y358_158"><a data-nav-link-id="0" data-nav-link-empty="true" href="/open/" data-safe-triangle-parent-link="true" class="_navLink_1y358_158">Home</a></li><li data-safe-triangle-parent-id="1" class="_navLinkContainer_1y358_158"><a data-nav-link-id="1" data-nav-link-empty="true" href="/open/about/" data-safe-triangle-parent-link="true" class="_navLink_1y358_158">About</a></li><li data-safe-triangle-parent-id="2" class="_navLinkContainer_1y358_158"><a data-nav-link-id="2" href="/open/data/motion/" data-safe-triangle-parent-link="true" data-tracking="{&quot;section_title&quot;:&quot;Data&quot;}" class="_navLink_1y358_158">Data</a><button type="button" data-submenu-id="2" aria-expanded="false" aria-controls="w-vqyylemi-sub-nav-2" aria-label="Enter Data page menu" class="_enterSubmenu_1y358_550"><div role="img" aria-label="right arrow" class="_chevron_xndim_1"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.375 1.625L10.75 11L1.375 20.375" stroke="black" stroke-width="3"></path></svg></div></button><div id="w-vqyylemi-sub-nav-2" data-nav-panel-id="2" aria-hidden="true" class="_details_1y358_164"><button type="button" data-submenu-id="2" aria-expanded="false" aria-controls="w-vqyylemi-sub-nav-2" aria-label="Exit Data page menu" class="_exitSubmenu_1y358_933"><div role="img" aria-label="left arrow" class="_chevron_xndim_1 _left_xndim_9"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.375 1.625L10.75 11L1.375 20.375" stroke="black" stroke-width="3"></path></svg></div></button><p class="_title_1y358_660">Data</p><div role="img" aria-label="Waymo Logo" class="_miniLogo_1y358_688"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 65 46" fill="none"><path d="M29.765 14.3678L21.9292 27.8241L27.7998 31.1633L35.6355 17.707L29.765 14.3678Z" fill="#0583FF"></path><path d="M45.4368 14.3678L37.601 27.8241L43.4715 31.1633L51.3073 17.707L45.4368 14.3678Z" fill="#0583FF"></path><path d="M51.7593 16.0372C51.7593 16.6993 51.5606 17.3465 51.1884 17.897C50.8163 18.4475 50.2873 18.8766 49.6684 19.13C49.0495 19.3833 48.3684 19.4496 47.7114 19.3205C47.0544 19.1913 46.4509 18.8725 45.9772 18.4043C45.5035 17.9361 45.1809 17.3397 45.0502 16.6903C44.9195 16.0409 44.9866 15.3679 45.2429 14.7562C45.4993 14.1445 45.9334 13.6217 46.4904 13.2538C47.0474 12.886 47.7023 12.6897 48.3722 12.6897C48.817 12.6897 49.2574 12.7762 49.6684 12.9445C50.0793 13.1127 50.4527 13.3593 50.7672 13.6701C51.0817 13.981 51.3312 14.35 51.5015 14.7562C51.6717 15.1623 51.7593 15.5976 51.7593 16.0372Z" fill="#00EBA7"></path><path d="M24.8677 32.8415C24.2718 32.8421 23.6863 32.6873 23.1703 32.3926C22.6544 32.098 22.2262 31.6739 21.9292 31.1633L14.0934 17.707C13.6453 16.9376 13.5249 16.0238 13.7586 15.1667C13.9922 14.3095 14.5609 13.5792 15.3393 13.1364C16.1178 12.6936 17.0424 12.5746 17.9097 12.8055C18.777 13.0365 19.5159 13.5984 19.9639 14.3678L27.7998 27.8242C28.0958 28.3329 28.2514 28.9096 28.2508 29.4965C28.2503 30.0833 28.0937 30.6598 27.7967 31.1679C27.4997 31.6761 27.0728 32.0983 26.5587 32.392C26.0446 32.6857 25.4615 32.8407 24.8677 32.8415V32.8415Z" fill="#00EBA7"></path><path d="M40.5392 32.8415C39.9433 32.8421 39.3578 32.6872 38.8419 32.3926C38.326 32.0979 37.8979 31.6739 37.6008 31.1633L29.765 17.707C29.317 16.9376 29.1965 16.0238 29.4302 15.1667C29.6639 14.3095 30.2325 13.5792 31.011 13.1364C31.3964 12.9172 31.8218 12.7751 32.2628 12.7183C32.7039 12.6615 33.1519 12.6912 33.5813 12.8055C34.4486 13.0365 35.1875 13.5984 35.6356 14.3678L43.4714 27.8241C43.7674 28.3329 43.923 28.9096 43.9224 29.4965C43.9219 30.0833 43.7653 30.6597 43.4683 31.1679C43.1713 31.6761 42.7444 32.0982 42.2303 32.392C41.7162 32.6857 41.133 32.8407 40.5392 32.8415Z" fill="#00EBA7"></path></svg></div><div data-safe-triangle-submenu-id="2" class="_subnav_1y358_651"><ul class="_subnavList_1y358_751"><li class="_subnavItem_1y358_796"><a href="/open/data/e2e/" data-tracking="{&quot;section_title&quot;:&quot;End-to-End&quot;}">End-to-End</a></li><li class="_subnavItem_1y358_796"><a href="/open/data/motion/" data-tracking="{&quot;section_title&quot;:&quot;Data&quot;}">Motion</a></li><li class="_subnavItem_1y358_796"><a href="/open/data/perception/" data-tracking="{&quot;section_title&quot;:&quot;Perception&quot;}">Perception</a></li></ul></div></div></li><li data-safe-triangle-parent-id="3" class="_navLinkContainer_1y358_158"><a data-nav-link-id="3" data-nav-link-empty="true" href="/open/download/" data-safe-triangle-parent-link="true" class="_navLink_1y358_158">Download</a></li><li data-safe-triangle-parent-id="4" class="_navLinkContainer_1y358_158"><a data-nav-link-id="4" href="/open/challenges/" data-safe-triangle-parent-link="true" class="_navLink_1y358_158">Challenges</a><button type="button" data-submenu-id="4" aria-expanded="false" aria-controls="w-vqyylemi-sub-nav-4" aria-label="Enter Data page menu" class="_enterSubmenu_1y358_550"><div role="img" aria-label="right arrow" class="_chevron_xndim_1"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.375 1.625L10.75 11L1.375 20.375" stroke="black" stroke-width="3"></path></svg></div></button><div id="w-vqyylemi-sub-nav-4" data-nav-panel-id="4" aria-hidden="true" class="_details_1y358_164"><button type="button" data-submenu-id="4" aria-expanded="false" aria-controls="w-vqyylemi-sub-nav-4" aria-label="Exit Data page menu" class="_exitSubmenu_1y358_933"><div role="img" aria-label="left arrow" class="_chevron_xndim_1 _left_xndim_9"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.375 1.625L10.75 11L1.375 20.375" stroke="black" stroke-width="3"></path></svg></div></button><p class="_title_1y358_660">Challenges</p><div role="img" aria-label="Waymo Logo" class="_miniLogo_1y358_688"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 65 46" fill="none"><path d="M29.765 14.3678L21.9292 27.8241L27.7998 31.1633L35.6355 17.707L29.765 14.3678Z" fill="#0583FF"></path><path d="M45.4368 14.3678L37.601 27.8241L43.4715 31.1633L51.3073 17.707L45.4368 14.3678Z" fill="#0583FF"></path><path d="M51.7593 16.0372C51.7593 16.6993 51.5606 17.3465 51.1884 17.897C50.8163 18.4475 50.2873 18.8766 49.6684 19.13C49.0495 19.3833 48.3684 19.4496 47.7114 19.3205C47.0544 19.1913 46.4509 18.8725 45.9772 18.4043C45.5035 17.9361 45.1809 17.3397 45.0502 16.6903C44.9195 16.0409 44.9866 15.3679 45.2429 14.7562C45.4993 14.1445 45.9334 13.6217 46.4904 13.2538C47.0474 12.886 47.7023 12.6897 48.3722 12.6897C48.817 12.6897 49.2574 12.7762 49.6684 12.9445C50.0793 13.1127 50.4527 13.3593 50.7672 13.6701C51.0817 13.981 51.3312 14.35 51.5015 14.7562C51.6717 15.1623 51.7593 15.5976 51.7593 16.0372Z" fill="#00EBA7"></path><path d="M24.8677 32.8415C24.2718 32.8421 23.6863 32.6873 23.1703 32.3926C22.6544 32.098 22.2262 31.6739 21.9292 31.1633L14.0934 17.707C13.6453 16.9376 13.5249 16.0238 13.7586 15.1667C13.9922 14.3095 14.5609 13.5792 15.3393 13.1364C16.1178 12.6936 17.0424 12.5746 17.9097 12.8055C18.777 13.0365 19.5159 13.5984 19.9639 14.3678L27.7998 27.8242C28.0958 28.3329 28.2514 28.9096 28.2508 29.4965C28.2503 30.0833 28.0937 30.6598 27.7967 31.1679C27.4997 31.6761 27.0728 32.0983 26.5587 32.392C26.0446 32.6857 25.4615 32.8407 24.8677 32.8415V32.8415Z" fill="#00EBA7"></path><path d="M40.5392 32.8415C39.9433 32.8421 39.3578 32.6872 38.8419 32.3926C38.326 32.0979 37.8979 31.6739 37.6008 31.1633L29.765 17.707C29.317 16.9376 29.1965 16.0238 29.4302 15.1667C29.6639 14.3095 30.2325 13.5792 31.011 13.1364C31.3964 12.9172 31.8218 12.7751 32.2628 12.7183C32.7039 12.6615 33.1519 12.6912 33.5813 12.8055C34.4486 13.0365 35.1875 13.5984 35.6356 14.3678L43.4714 27.8241C43.7674 28.3329 43.923 28.9096 43.9224 29.4965C43.9219 30.0833 43.7653 30.6597 43.4683 31.1679C43.1713 31.6761 42.7444 32.0982 42.2303 32.392C41.7162 32.6857 41.133 32.8407 40.5392 32.8415Z" fill="#00EBA7"></path></svg></div><div data-safe-triangle-submenu-id="4" class="_subnav_1y358_651"><ul class="_subnavList_1y358_751 grid-flow-columns"><li class="_subnavItem_1y358_796"><a href="/open/challenges/" data-tracking="{&quot;section_title&quot;:&quot;Challenges&quot;}">Overview</a></li><li class="_subnavItem_1y358_796"><a href="/open/challenges/submissions/" data-tracking="{&quot;section_title&quot;:&quot;Challenges&quot;}">My Submissions</a></li><li class="_subnavItem_1y358_796 grid-row-span-3"><a href="/open/challenges/#past-challenges" data-tracking="{&quot;section_title&quot;:&quot;Challenges&quot;}">Past Challenges</a></li></ul></div></div></li><li data-safe-triangle-parent-id="5" class="_navLinkContainer_1y358_158"><a data-nav-link-id="5" data-nav-link-empty="true" href="/open/faq/" data-safe-triangle-parent-link="true" class="_navLink_1y358_158">FAQ</a></li><li data-safe-triangle-parent-id="6" class="_navLinkContainer_1y358_158"><button type="button" data-search="true" data-nav-link-id="6" class="_searchButtonDesktop_1y358_1045 _navLink_1y358_158"><svg aria-hidden="false" aria-label="Search Waymo.com" class="_searchIcon_1y358_167"><use href="/assets/BU31Xvf-.svg#search"></use></svg></button><div id="w-vqyylemi-sub-nav-6" data-nav-panel-id="6" data-safe-triangle-submenu-id="6" class="_details_1y358_164"><w-island island="Search" props="{&quot;className&quot;:&quot;searchContent&quot;,&quot;searchInputPlaceholder&quot;:&quot;Search Waymo&quot;,&quot;quickLinksLabel&quot;:&quot;Quick links&quot;,&quot;quickLinks&quot;:[{&quot;label&quot;:&quot;Get a ride&quot;,&quot;url&quot;:&quot;/rides/&quot;},{&quot;label&quot;:&quot;Find a dream job&quot;,&quot;url&quot;:&quot;/careers/&quot;},{&quot;label&quot;:&quot;Contact us&quot;,&quot;url&quot;:&quot;/contact/&quot;}],&quot;color&quot;:&quot;black&quot;}" class="_searchContainer_1y358_1129"></w-island></div></li></ul><div role="img" aria-label="Waymo Logo" class="_miniLogoMobile_1y358_688"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 65 46" fill="none"><path d="M29.765 14.3678L21.9292 27.8241L27.7998 31.1633L35.6355 17.707L29.765 14.3678Z" fill="#0583FF"></path><path d="M45.4368 14.3678L37.601 27.8241L43.4715 31.1633L51.3073 17.707L45.4368 14.3678Z" fill="#0583FF"></path><path d="M51.7593 16.0372C51.7593 16.6993 51.5606 17.3465 51.1884 17.897C50.8163 18.4475 50.2873 18.8766 49.6684 19.13C49.0495 19.3833 48.3684 19.4496 47.7114 19.3205C47.0544 19.1913 46.4509 18.8725 45.9772 18.4043C45.5035 17.9361 45.1809 17.3397 45.0502 16.6903C44.9195 16.0409 44.9866 15.3679 45.2429 14.7562C45.4993 14.1445 45.9334 13.6217 46.4904 13.2538C47.0474 12.886 47.7023 12.6897 48.3722 12.6897C48.817 12.6897 49.2574 12.7762 49.6684 12.9445C50.0793 13.1127 50.4527 13.3593 50.7672 13.6701C51.0817 13.981 51.3312 14.35 51.5015 14.7562C51.6717 15.1623 51.7593 15.5976 51.7593 16.0372Z" fill="#00EBA7"></path><path d="M24.8677 32.8415C24.2718 32.8421 23.6863 32.6873 23.1703 32.3926C22.6544 32.098 22.2262 31.6739 21.9292 31.1633L14.0934 17.707C13.6453 16.9376 13.5249 16.0238 13.7586 15.1667C13.9922 14.3095 14.5609 13.5792 15.3393 13.1364C16.1178 12.6936 17.0424 12.5746 17.9097 12.8055C18.777 13.0365 19.5159 13.5984 19.9639 14.3678L27.7998 27.8242C28.0958 28.3329 28.2514 28.9096 28.2508 29.4965C28.2503 30.0833 28.0937 30.6598 27.7967 31.1679C27.4997 31.6761 27.0728 32.0983 26.5587 32.392C26.0446 32.6857 25.4615 32.8407 24.8677 32.8415V32.8415Z" fill="#00EBA7"></path><path d="M40.5392 32.8415C39.9433 32.8421 39.3578 32.6872 38.8419 32.3926C38.326 32.0979 37.8979 31.6739 37.6008 31.1633L29.765 17.707C29.317 16.9376 29.1965 16.0238 29.4302 15.1667C29.6639 14.3095 30.2325 13.5792 31.011 13.1364C31.3964 12.9172 31.8218 12.7751 32.2628 12.7183C32.7039 12.6615 33.1519 12.6912 33.5813 12.8055C34.4486 13.0365 35.1875 13.5984 35.6356 14.3678L43.4714 27.8241C43.7674 28.3329 43.923 28.9096 43.9224 29.4965C43.9219 30.0833 43.7653 30.6597 43.4683 31.1679C43.1713 31.6761 42.7444 32.0982 42.2303 32.392C41.7162 32.6857 41.133 32.8407 40.5392 32.8415Z" fill="#00EBA7"></path></svg></div></div><button type="button" data-mobile-search="true" class="_searchButtonMobile_1y358_170"><svg aria-hidden="false" aria-label="Search Waymo.com" class="_searchIcon_1y358_167"><use href="/assets/BU31Xvf-.svg#search"></use></svg></button><div data-search-panel="true" class="_searchPanelMobile_1y358_173"><w-island island="Search" props="{&quot;className&quot;:&quot;searchContent&quot;,&quot;searchInputPlaceholder&quot;:&quot;Search Waymo&quot;,&quot;quickLinksLabel&quot;:&quot;Quick links&quot;,&quot;quickLinks&quot;:[{&quot;label&quot;:&quot;Get a ride&quot;,&quot;url&quot;:&quot;/rides/&quot;},{&quot;label&quot;:&quot;Find a dream job&quot;,&quot;url&quot;:&quot;/careers/&quot;},{&quot;label&quot;:&quot;Contact us&quot;,&quot;url&quot;:&quot;/contact/&quot;}],&quot;color&quot;:&quot;black&quot;}" class="_searchContainer_1y358_1129"></w-island></div></nav></w-header></w-safe-triangle></header><main id="main"><w-mathjax><div class="_page_1ibd0_1"><div class="_heroSection_1ibd0_154"><img src="https://waymo.com/static/images/dataset/dataset-logo.svg" alt="Waymo Open Dataset" class="_heroSectionLogo_1ibd0_186"/><div class="_heroSectionForeground_1ibd0_199"><div class="_heroSectionEyebrow_1ibd0_216">Challenge</div><h1>Occupancy and Flow Prediction</h1></div><div class="_heroSectionBackground_1ibd0_232"><img src="//lh3.googleusercontent.com/y6iAIdvDQyUt1hx_Ly6wropx_o9ILOCNrcZLiQmndrlm5VaCvCn0gnnCBXRXPJVd79T7YiR7VrUOMDu9Yj7o__pBJBVn22K_Aio" alt="occupancy-and-flow-prediction-hero@2x"/></div></div><section class="_section_1ibd0_5"><div><h2 id="overview" class="_h2_c3gu3_89">Overview</h2><figure class="_wrapper_1u6z4_2 _imageGrid_c3gu3_253"><ul style="--max-columns: 2;
+                  --max-image-width: 100%;" class="_list_1u6z4_22 imageGrid"><li class="_gridItem_1u6z4_16 spanCols:1 spanRows:1"><figure class="_gridItemFigure_1u6z4_16"><div><picture class="_picture_1yfl2_2"><source srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/6665edacd96e9120ecccd3989796035c-unnamed.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/6665edacd96e9120ecccd3989796035c-unnamed.gif 1x" media="(min-width: 600px)" type="image/gif" width="400" height="400"/><img alt="Occupancy and Flow Prediction Figure 1" loading="lazy" fetchpriority="auto" srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/6665edacd96e9120ecccd3989796035c-unnamed.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/6665edacd96e9120ecccd3989796035c-unnamed.gif 1x" src="//storage.googleapis.com/waymo-prod-cdn/uploads/6665edacd96e9120ecccd3989796035c-unnamed.gif" width="400" height="400" class="_image_1yfl2_5"/></picture></div></figure></li><li class="_gridItem_1u6z4_16 spanCols:1 spanRows:1"><figure class="_gridItemFigure_1u6z4_16"><div><picture class="_picture_1yfl2_2"><source srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/9252c3c1910abc449d08f60550362c6e-unnamed__1_.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/9252c3c1910abc449d08f60550362c6e-unnamed__1_.gif 1x" media="(min-width: 600px)" type="image/gif" width="400" height="400"/><img alt="Occupancy and Flow Prediction Figure 1" loading="lazy" fetchpriority="auto" srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/9252c3c1910abc449d08f60550362c6e-unnamed__1_.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/9252c3c1910abc449d08f60550362c6e-unnamed__1_.gif 1x" src="//storage.googleapis.com/waymo-prod-cdn/uploads/9252c3c1910abc449d08f60550362c6e-unnamed__1_.gif" width="400" height="400" class="_image_1yfl2_5"/></picture></div></figure></li><li class="_gridItem_1u6z4_16 spanCols:1 spanRows:1"><figure class="_gridItemFigure_1u6z4_16"><div><picture class="_picture_1yfl2_2"><source srcset="//lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s2880-rw-v1 2x, //lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s1440-rw-v1 1x" media="(min-width: 600px)" type="image/webp" width="512" height="512"/><source srcset="//lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s2880-v1 2x, //lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s1440 1x" media="(min-width: 600px)" type="image/jpeg" width="512" height="512"/><source srcset="//lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s840-rw-v1 2x, //lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s420-rw-v1 1x" media="(max-width: 599px)" type="image/webp" width="512" height="512"/><img alt="Occupancy and Flow Prediction Figure 1" loading="lazy" fetchpriority="auto" srcset="//lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s840-v1 2x, //lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s420 1x" src="//lh3.googleusercontent.com/nsmyef7MJfYZKkmHuLX3jNaIi7pDDPGU5nHpWUuZtS4wJl7DoWntFbh2rVdFjHm-SCI73rtP5LMr3RE-8iz7YvebYxG0473VxQ=e365-s420" width="512" height="512" class="_image_1yfl2_5"/></picture></div></figure></li></ul><figcaption class="_caption_1u6z4_96"><p>Figure 1. <b>Left</b>: Sample occupancy predictions. Red pixels show occupancy predictions for vehicles. The black box shows ground-truth future occupancy of the ego vehicle. <b>Right</b>: Sample flow predictions. Gray boxes show agent occupancies over the input interval (history + current). Colored pixels show predicted flow direction (hue) and magnitude (saturation) at each location in the grid.</p></figcaption></figure><p><b>Note: The </b><a href="https://github.com/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_occupancy_flow.ipynb">tutorial notebook</a><b> demonstrates all the items discussed on this web page, including construction of ground-truth, training a baseline model with sample losses, computing the metrics, and generating submission files over the test dataset.</b></p><p><b>Note: The output representation for the occupancy flow tasks is very similar to other well-studied tasks like semantic segmentation and video prediction. So, it is possible to adopt models designed for these tasks to solve the occupancy flow challenge.</b></p><p>This challenge consists of three connected tasks, defined for the <a href="https://waymo.com/open/data/motion/">Waymo Open Motion Dataset</a>. All tasks use the same inputs: A one-second history of a number of agents in a scene. The objective for the tasks is to predict future occupancies and flow (motion) of <b>only vehicles</b> over 8 seconds into the future. All predictions are dense grids in bird's-eye view (BEV). Note that for this challenge the predictions should include <b>all vehicles</b>, ignoring the value of <code class="_code_c3gu3_26">objects_of_interest</code> and <code class="_code_c3gu3_26">tracks_to_predict</code> in the dataset protos. Our <a href="https://github.com/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_occupancy_flow.ipynb">sample code</a> demonstrates how to construct the ground truth for all tasks.</p><p>The WOD motion dataset contains agent positions (and other attributes) at 10 Hz. Each example in the training and validation sets contains 1 second of history data, 1 timestep for the current time, and 8 seconds of future data. This corresponds to 10 history timesteps, 1 current timestep, and 80 future timesteps, for a total of 91 timesteps per scene. The 91 timesteps in each example can be organized as:</p><p><code class="_code_c3gu3_26">{t - 10, t - 9, …, t - 1, t, t + 1, …, t + 79, t + 80}</code></p><p>where <code class="_code_c3gu3_26">t</code> indicates the current timestep. Note that agents are not necessarily present in all timesteps. For example, an agent may get occluded in the future, or it may be currently occluded and only appear in future data. Presence and absence of agents at particular timesteps is indicated by the <code class="_code_c3gu3_26">valid</code> data attributes.</p><p>The test set hides the ground truth future data. Each example in the test set contains a total of 11 timesteps (10 history and 1 current timesteps).</p><h3 id="waypoints" class="_h3_c3gu3_111">Waypoints</h3><p>When constructing the ground-truth for the occupancy flow challenge, we divide the 80 future timesteps into 8 one-second intervals, each containing 10 timesteps. For example, the first interval consists of the first 10 future timesteps <code class="_code_c3gu3_26">{t + 1, t + 2, …, t + 10}</code> and the last waypoint consists of the last 10 future timesteps <code class="_code_c3gu3_26">{t + 71, t + 72, …, t + 80}</code> in every scenario.</p><p>For all tasks in this challenge the objective is to predict 8 disjoint BEV grids corresponding to the 8 intervals. The prediction targets are taken from the last timestep in each interval, that is, timesteps <code class="_code_c3gu3_26">{t + 10, t + 20, …, t + 80}</code>. We refer to each of these 8 timesteps as a <b>waypoint</b>. In this document and in the codebase, we identify these waypoints using the index variable \(k \in \{0, \dots, 7\}\). Ground-truth flow fields are constructed from the displacements between the waypoints, that is <code class="_code_c3gu3_26">{t ⇒ t + 10, t + 10 ⇒ t + 20, …, t + 70 ⇒ t + 80}</code>.<br/><br/>The released code also supports constructing <a href="https://github.com/waymo-research/waymo-open-dataset/blob/1297cdcbcd103d4befb4b498e50a0c030053e6c0/waymo_open_dataset/protos/occupancy_flow_metrics.proto#L38-L55">cumulative waypoints</a>, which aggregate occupancy and flow using all the 10 timesteps in each one-second interval. This setting might be preferred in some planning applications, but for this challenge the submissions should predict the individual sub-sampled waypoints (<code class="_code_c3gu3_26">cumulative_waypoints = false</code>).</p><p>The <a href="https://github.com/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_occupancy_flow.ipynb">released code</a> contains the complete implementation for constructing the ground-truth for all 3 tasks using TensorFlow operations. If you prefer to use other frameworks, we suggest running the code to precompute and store ground-truth data as numpy arrays.</p><p>The following sections describe how agents are filtered based on current visibility and agent type (vehicle/pedestrian/cyclist) to get included and rendered in each ground-truth waypoint grid.</p><h2 id="task-1" class="_h2_c3gu3_89">Task 1</h2><h3 id="future-occupancy-of-currently-observed-vehicles" class="_h3_c3gu3_111">Future Occupancy of Currently-Observed Vehicles</h3><p>Given histories of all agents over input timesteps <code class="_code_c3gu3_26">{t - 10, t - 9, ..., t}</code>, predict future occupancy of <b>all vehicles</b> that are <b>present at the current timestep t</b>, for 8 seconds into the future. More specifically, the predictions are 8 occupancy grids \(O^b_k, k \in \{0, \dots, 7\}\), capturing future occupancy of all currently-visible vehicles at 8 different waypoints. Each occupancy grid \(O^b_k\) is a <code class="_code_c3gu3_26">256 x 256 x 1</code> array containing values in range <code class="_code_c3gu3_26">[0, 1]</code> indicating the probability that some part of some currently-observed vehicle will occupy that grid cell.</p><p>Our <a href="https://github.com/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_occupancy_flow.ipynb">sample code</a> demonstrates how the ground truth occupancy grids are constructed for each waypoint. In the ground-truth occupancy grids, each grid cell is set to either <code class="_code_c3gu3_26">0</code> or <code class="_code_c3gu3_26">1</code>.</p><h2 id="task-2" class="_h2_c3gu3_89">Task 2</h2><h3 id="future-occupancy-of-currently-occluded-vehicles" class="_h3_c3gu3_111">Future Occupancy of Currently-Occluded Vehicles</h3><figure class="_wrapper_1u6z4_2 _imageGrid_c3gu3_253"><ul style="--max-columns: 2;
+                  --max-image-width: 100%;" class="_list_1u6z4_22 imageGrid"><li class="_gridItem_1u6z4_16 spanCols:1 spanRows:1"><figure class="_gridItemFigure_1u6z4_16"><div><picture class="_picture_1yfl2_2"><source srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/3b2d0933da6cb0fa3e3cc6a7dafaf726-unnamed__2_.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/3b2d0933da6cb0fa3e3cc6a7dafaf726-unnamed__2_.gif 1x" media="(min-width: 600px)" type="image/gif" width="400" height="400"/><img alt="Occupancy and Flow Prediction Figure 2" loading="lazy" fetchpriority="auto" srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/3b2d0933da6cb0fa3e3cc6a7dafaf726-unnamed__2_.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/3b2d0933da6cb0fa3e3cc6a7dafaf726-unnamed__2_.gif 1x" src="//storage.googleapis.com/waymo-prod-cdn/uploads/3b2d0933da6cb0fa3e3cc6a7dafaf726-unnamed__2_.gif" width="400" height="400" class="_image_1yfl2_5"/></picture></div></figure></li><li class="_gridItem_1u6z4_16 spanCols:1 spanRows:1"><figure class="_gridItemFigure_1u6z4_16"><div><picture class="_picture_1yfl2_2"><source srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/a97dda51494256794d6c902015c9bc71-unnamed__3_.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/a97dda51494256794d6c902015c9bc71-unnamed__3_.gif 1x" media="(min-width: 600px)" type="image/gif" width="400" height="400"/><img alt="Occupancy and Flow Prediction Figure 2" loading="lazy" fetchpriority="auto" srcset="//storage.googleapis.com/waymo-prod-cdn/uploads/a97dda51494256794d6c902015c9bc71-unnamed__3_.gif 2x, //storage.googleapis.com/waymo-prod-cdn/uploads/a97dda51494256794d6c902015c9bc71-unnamed__3_.gif 1x" src="//storage.googleapis.com/waymo-prod-cdn/uploads/a97dda51494256794d6c902015c9bc71-unnamed__3_.gif" width="400" height="400" class="_image_1yfl2_5"/></picture></div></figure></li></ul><figcaption class="_caption_1u6z4_96"><p>Figure 2. Future occupancy grids for currently-observed agents (<b>left</b>) and currently-occluded agents (<b>right</b>). Red and green pixels show ground-truth future occupancies for vehicles and pedestrians. The black box shows ground-truth future occupancy of the ego vehicle.</p></figcaption></figure><p>Given histories of all agents over input timesteps <code class="_code_c3gu3_26">{t - 10, t - 9, ..., t}</code>, predict future occupancy of <b>all vehicles</b> that are <b>not present at the current timestep t</b>, for 8 seconds into the future. More specifically, the predictions are 8 occupancy grids \(O^b_k, k \in \{0, \dots, 7\}\), capturing future occupancy of all currently-occluded vehicles at 8 different waypoints. Each occupancy grid \(O^b_k\) is a <code class="_code_c3gu3_26">256 x 256 x 1</code> array containing values in range <code class="_code_c3gu3_26">[0, 1]</code> indicating the probability that some part of some currently-occluded vehicle will occupy that grid cell.</p><p>Note: an occluded vehicle appears in the ground-truth occupancy grids only at timesteps when it has become disoccluded and observed by the ego vehicle (and not earlier).</p><h2 id="task-3" class="_h2_c3gu3_89">Task 3</h2><h3 id="future-flow-of-all-vehicles" class="_h3_c3gu3_111">Future Flow of All Vehicles</h3><p>Given histories of all agents over input timesteps <code class="_code_c3gu3_26">{t - 10, t - 9, ..., t}</code>, predict future flow of <b>all vehicles</b> (currently observed or occluded), for 8 seconds into the future. More specifically, the predictions are 8 flow fields \(F_k, k \in \{0, \dots, 7\}\), capturing future flow of all vehicles at 8 different waypoints. Each flow field \(F_k\) is a <code class="_code_c3gu3_26">256 x 256 x 2</code> array containing <code class="_code_c3gu3_26">(dx, dy)</code> values indicating the displacement over 1 second of the vehicle part that occupies that grid cell.</p><p>In ground truth, flow is constructed between timesteps which are 1 second (10 steps) apart. For example, flow for the last timestep <code class="_code_c3gu3_26">t + 80</code> is constructed by comparing timestep <code class="_code_c3gu3_26">t + 80</code> with timestep <code class="_code_c3gu3_26">t + 70</code>. Every occupied grid cell at timestep <code class="_code_c3gu3_26">t + 80</code> stores a <code class="_code_c3gu3_26">(dx, dy)</code> vector pointing to its earlier location at timestep <code class="_code_c3gu3_26">t + 70</code>. Note that the flow vectors point back in time. The ground-truth flow vectors are set to <code class="_code_c3gu3_26">(0, 0)</code> for any grid cells that are not occupied at timestep <code class="_code_c3gu3_26">t + 80</code>. Note that in effect \(F_k\) captures displacements between two successive occupancy waypoints \(O_{k-1}\) and \(O_k\).</p><p>Flow metrics are measured only over the occupied grid cells. In other words, grid cells whose ground-truth flow is <code class="_code_c3gu3_26">(0, 0)</code> are excluded from the metrics. Therefore, you are free to predict any value for the unoccupied cells. We recommend excluding the unoccupied cells from your flow loss function as well. These settings decouple the flow prediction and occupancy prediction tasks, and encourage the model to capture the general motion patterns of the scene in the predicted flow fields. Requiring the model to predict <code class="_code_c3gu3_26">(0, 0)</code> flow vectors for the unoccupied cells may lead to conservative predictions where the model predicts smaller flow vectors as an average between a true motion vector and a <code class="_code_c3gu3_26">(0, 0)</code> vector in areas which are not certain to be occupied.</p><h2 id="metrics" class="_h2_c3gu3_89">Metrics</h2><h3 id="occupancy-metrics" class="_h3_c3gu3_111">Occupancy metrics</h3><p>The occupancy metrics are used for tasks 1 and 2. They compare ground-truth and predicted occupancy grids for each of the 8 waypoints.</p><p>Let \(O^b_k\), \(\hat{O}^b_k\) denote the ground-truth and predicted future occupancy at waypoint \(k\) of currently-observed vehicles. Let \(O^c_k\), \(\hat{O}^c_k\) denote the ground-truth and predicted future occupancy at waypoint \(k\) of currently-occluded vehicles.</p><p>Treating the occupancy of each grid cell as a separate binary prediction, the \(\text{AUC}\) metric uses a linearly-spaced set of thresholds in [0, 1] to compute pairs of precision and recall values and estimate the area under the PR-curve. More specifically, we compute \(\text{AUC}(O^b_k, \hat{O}^b_k)\) for currently-observed vehicles and \(\text{AUC}(O^c_k, \hat{O}^c_k)\) for currently-occluded vehicles.</p><p>The \(\text{Soft-IoU}\) metric measures the soft intersection-over-union between ground-truth and predicted occupancy grids as:\begin{equation} \text{Soft-IoU}(O^b_k, \hat{O}^b_k) = \frac{\sum_{x,y} O^b_k \hat{O}^b_k}{\sum_{x,y} O^b_k + \hat{O}^b_k - O^b_k \hat{O}^b_k} \end{equation}If \(O^b_k\) is empty, the \(\text{Soft-IoU}\) metric is set to zero. Similarly, we compute \(\text{Soft-IoU}(O^c_k, \hat{O}^c_k)\) for currently-occluded vehicles.All metrics are averaged over the 8 predicted waypoints.</p><h3 id="flow-metric" class="_h3_c3gu3_111">Flow Metric</h3><p>The End-Point Error (\(\text{EPE}\)) metric measures the mean L2 distance between the ground-truth flow field \(F_k\) and predicted flow field \(\hat{F}_k\) as:</p><p>\begin{equation} \Big\lVert F_k(x, y) - \hat{F}_k(x, y)\Big\rVert_2 \text{ where } F_k(x, y) \neq (0, 0). \end{equation}</p><h3 id="joint-occupancy-and-flow-metrics" class="_h3_c3gu3_111">Joint Occupancy and Flow Metrics</h3><p>The joint metrics measure the joint accuracy of occupancy and flow predictions at each waypoint \(k\). Given three predictions \(\hat{O}^b_k\), \(\hat{O}^c_k\), \(\hat{F}_k\) for waypoint \(k\), we compute the <b>Flow-Grounded Occupancy</b> metrics as follows:</p><p>First, we compute the ground-truth occupancy of all vehicles (currently observed or occluded) at waypoint \(k\) as:</p><p>\begin{equation} O_k = O^b_k + O^c_k \end{equation}</p><p>and at waypoint \(k-1\) as</p><p>\begin{equation} O_{k-1} = O^b_{k-1} + O^c_{k-1}. \end{equation}</p><p>We also compute the predicted occupancy of all vehicles as</p><p>\begin{equation} \hat{O}_k = \hat{O}^b_k + \hat{O}^c_k. \end{equation}</p><p>If the predicted occupancies are accurate, we should have \(\hat{O}_k = O_k\). The occupancy metrics defined above already evaluate this expectation. To ensure correctness of the predicted flow field, \(\hat{F}_k\), we use it to warp the ground-truth origin occupancy of that flow field (\(O_{k-1}\)) as</p><p>\begin{equation} \hat{W}_k = \hat{F}_k \circ O_{k-1} \end{equation}</p><p>where \(\circ\) indicates function application -- applying the flow field as a function to transform the occupancy. If the predicted flow is accurate, it should be able to reach and cover the future occupancy \(O_k\). Note that since we predict backward flow fields, \(\hat{W}_k\) may predict expansion of occupancy in different directions and reach a larger area beyond \(O_k\). Therefore, we multiply \(\hat{W}_k\) element-wise with \(\hat{O}_k\), to get</p><p>\begin{equation} \hat{W}_k \hat{O}_k. \end{equation}</p><p>If the predicted occupancy and flow at waypoint \(k\) are accurate, this term should be equal to the ground-truth \(O_k\). In other words, for a grid cell to be marked as occupied in \(\hat{W}_k \hat{O}_k\), it should be supported by both occupancy and flow predictions. Therefore, the flow-grounded occupancy metrics compute \(\text{AUC}\) and \(\text{Soft-IoU}\) between \(\hat{W}_k \hat{O}_k\) and ground-truth \(O_k\) as \(\text{AUC}(O_k, \hat{W}_k \hat{O}_k)\) and \(\text{Soft-IoU}(O_k, \hat{W}_k \hat{O}_k)\).</p><p>All metrics are averaged over the 8 predicted waypoints.</p></div></section><section class="_section_1ibd0_5"><h2>Leaderboard</h2><p>Disqualified from the 2022 Waymo Open Dataset Challenge.</p></section><div class="_leaderboard_1ibd0_144"><w-open-leaderboard data-table="{&quot;slug&quot;:&quot;occupancy-flow-prediction-challenge&quot;,&quot;year&quot;:&quot;2022&quot;,&quot;challengeId&quot;:&quot;OCCUPANCY_FLOW&quot;,&quot;columnDefs&quot;:[{&quot;headerName&quot;:&quot;Method Name&quot;,&quot;field&quot;:&quot;method_name&quot;,&quot;minWidth&quot;:250,&quot;pinned&quot;:&quot;left&quot;},{&quot;children&quot;:[{&quot;field&quot;:&quot;vehicles_observed_auc&quot;,&quot;headerName&quot;:&quot;AUC&quot;,&quot;cellDataType&quot;:&quot;metric&quot;},{&quot;field&quot;:&quot;vehicles_observed_iou&quot;,&quot;headerName&quot;:&quot;Soft IoU&quot;,&quot;cellDataType&quot;:&quot;metric&quot;}],&quot;headerName&quot;:&quot;Observed occupancy&quot;},{&quot;children&quot;:[{&quot;field&quot;:&quot;vehicles_occluded_auc&quot;,&quot;headerName&quot;:&quot;AUC&quot;,&quot;cellDataType&quot;:&quot;metric&quot;},{&quot;field&quot;:&quot;vehicles_occluded_iou&quot;,&quot;headerName&quot;:&quot;Soft IoU&quot;,&quot;cellDataType&quot;:&quot;metric&quot;}],&quot;headerName&quot;:&quot;Occluded occupancy&quot;},{&quot;children&quot;:[{&quot;field&quot;:&quot;vehicles_flow_epe&quot;,&quot;headerName&quot;:&quot;EPE&quot;,&quot;cellDataType&quot;:&quot;metric&quot;}],&quot;headerName&quot;:&quot;Flow&quot;},{&quot;children&quot;:[{&quot;sort&quot;:&quot;desc&quot;,&quot;field&quot;:&quot;vehicles_flow_warped_occupancy_auc&quot;,&quot;headerName&quot;:&quot;AUC&quot;,&quot;headerClass&quot;:&quot;ag-header-cell-primary&quot;,&quot;cellDataType&quot;:&quot;metric&quot;},{&quot;field&quot;:&quot;vehicles_flow_warped_occupancy_iou&quot;,&quot;headerName&quot;:&quot;Soft IoU&quot;,&quot;cellDataType&quot;:&quot;metric&quot;}],&quot;headerName&quot;:&quot;Flow-grounded occupancy&quot;},{&quot;field&quot;:&quot;uses_public_model_pretraining&quot;,&quot;headerName&quot;:&quot;Uses public model pretraining?&quot;,&quot;cellDataType&quot;:&quot;boolean&quot;},{&quot;field&quot;:&quot;num_model_parameters&quot;,&quot;headerName&quot;:&quot;Num model parameters&quot;},{&quot;headerName&quot;:&quot;Date (Pacific Daylight Time)&quot;,&quot;field&quot;:&quot;submission_time&quot;,&quot;cellDataType&quot;:&quot;submissionTime&quot;,&quot;minWidth&quot;:240}],&quot;rows&quot;:[{&quot;id&quot;:&quot;1716474637447000&quot;,&quot;method_name&quot;:&quot;HGNET&quot;,&quot;submission_time_micros&quot;:&quot;1716474637447000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7331999,&quot;vehicles_observed_iou&quot;:0.42110798,&quot;vehicles_occluded_auc&quot;:0.16564691,&quot;vehicles_occluded_iou&quot;:0.03885876,&quot;vehicles_flow_epe&quot;:3.6698942,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.74026656,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.44975102,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;24&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;2d4a326e-51fb&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7331999,&quot;vehicles_observed_iou&quot;:0.42110798,&quot;vehicles_occluded_auc&quot;:0.16564691,&quot;vehicles_occluded_iou&quot;:0.03885876,&quot;vehicles_flow_epe&quot;:3.6698942,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.74026656,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.44975102,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1716474637447,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/2d4a326e-51fb/1716474637447000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653149180582527&quot;,&quot;method_name&quot;:&quot;BE-STI&quot;,&quot;submission_time_micros&quot;:&quot;1653149180582527&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.587214,&quot;vehicles_observed_iou&quot;:0.1678102,&quot;vehicles_occluded_auc&quot;:0.03507958,&quot;vehicles_occluded_iou&quot;:0.014776045,&quot;vehicles_flow_epe&quot;:6.6355715,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.5542602,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5542992,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;d3268981-baed&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.587214,&quot;vehicles_observed_iou&quot;:0.1678102,&quot;vehicles_occluded_auc&quot;:0.03507958,&quot;vehicles_occluded_iou&quot;:0.014776045,&quot;vehicles_flow_epe&quot;:6.6355715,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.5542602,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5542992,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653149180582,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/d3268981-baed/1653149180582527/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653329925094875&quot;,&quot;method_name&quot;:&quot;OccFlowNet&quot;,&quot;submission_time_micros&quot;:&quot;1653329925094875&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.66686666,&quot;vehicles_observed_iou&quot;:0.39109087,&quot;vehicles_occluded_auc&quot;:0.111398146,&quot;vehicles_occluded_iou&quot;:0.026400432,&quot;vehicles_flow_epe&quot;:6.6355715,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.6782091,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.44324514,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;d3268981-baed&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.66686666,&quot;vehicles_observed_iou&quot;:0.39109087,&quot;vehicles_occluded_auc&quot;:0.111398146,&quot;vehicles_occluded_iou&quot;:0.026400432,&quot;vehicles_flow_epe&quot;:6.6355715,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.6782091,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.44324514,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653329925094,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/d3268981-baed/1653329925094875/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1692766836737984&quot;,&quot;method_name&quot;:&quot;MotionPerceiver&quot;,&quot;submission_time_micros&quot;:&quot;1692766836737984&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7377243,&quot;vehicles_observed_iou&quot;:0.55200714,&quot;vehicles_occluded_auc&quot;:0.0064944704,&quot;vehicles_occluded_iou&quot;:0.0064177746,&quot;vehicles_flow_epe&quot;:21.559397,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.54158413,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4629748,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;ee9dd15b-e041&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7377243,&quot;vehicles_observed_iou&quot;:0.55200714,&quot;vehicles_occluded_auc&quot;:0.0064944704,&quot;vehicles_occluded_iou&quot;:0.0064177746,&quot;vehicles_flow_epe&quot;:21.559397,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.54158413,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4629748,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1692766836737,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/ee9dd15b-e041/1692766836737984/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1694053806235874&quot;,&quot;method_name&quot;:&quot;MotionPerceiver&quot;,&quot;submission_time_micros&quot;:&quot;1694053806235874&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.77031827,&quot;vehicles_observed_iou&quot;:0.5234059,&quot;vehicles_occluded_auc&quot;:0.0064944704,&quot;vehicles_occluded_iou&quot;:0.0064177746,&quot;vehicles_flow_epe&quot;:21.559397,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.541254,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46417698,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;ee9dd15b-e041&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.77031827,&quot;vehicles_observed_iou&quot;:0.5234059,&quot;vehicles_occluded_auc&quot;:0.0064944704,&quot;vehicles_occluded_iou&quot;:0.0064177746,&quot;vehicles_flow_epe&quot;:21.559397,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.541254,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46417698,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1694053806235,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/ee9dd15b-e041/1694053806235874/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1703635107928170&quot;,&quot;method_name&quot;:&quot;MotionPerceiver + Flow&quot;,&quot;submission_time_micros&quot;:&quot;1703635107928170&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.77898604,&quot;vehicles_observed_iou&quot;:0.5350274,&quot;vehicles_occluded_auc&quot;:0.0064950297,&quot;vehicles_occluded_iou&quot;:0.0064183366,&quot;vehicles_flow_epe&quot;:4.899575,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7391101,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.62971735,&quot;num_waypoints_with_observed_occupancy&quot;:34107,&quot;num_waypoints_with_occluded_occupancy&quot;:24428,&quot;num_waypoints_with_flow&quot;:34362}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;ee9dd15b-e041&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.77898604,&quot;vehicles_observed_iou&quot;:0.5350274,&quot;vehicles_occluded_auc&quot;:0.0064950297,&quot;vehicles_occluded_iou&quot;:0.0064183366,&quot;vehicles_flow_epe&quot;:4.899575,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7391101,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.62971735,&quot;num_waypoints_with_observed_occupancy&quot;:34107,&quot;num_waypoints_with_occluded_occupancy&quot;:24428,&quot;num_waypoints_with_flow&quot;:34362,&quot;submission_time&quot;:1703635107928,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/ee9dd15b-e041/1703635107928170/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653297940019176&quot;,&quot;method_name&quot;:&quot;HorizonOccFlowPrediction-base*&quot;,&quot;submission_time_micros&quot;:&quot;1653297940019176&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.8029021,&quot;vehicles_observed_iou&quot;:0.23455152,&quot;vehicles_occluded_auc&quot;:0.16461089,&quot;vehicles_occluded_iou&quot;:0.016862027,&quot;vehicles_flow_epe&quot;:3.694444,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.83795655,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.63240194,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;ceb015b9-a99b&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.8029021,&quot;vehicles_observed_iou&quot;:0.23455152,&quot;vehicles_occluded_auc&quot;:0.16461089,&quot;vehicles_occluded_iou&quot;:0.016862027,&quot;vehicles_flow_epe&quot;:3.694444,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.83795655,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.63240194,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653297940019,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/ceb015b9-a99b/1653297940019176/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653372516881173&quot;,&quot;method_name&quot;:&quot;HorizonOccFlowPrediction*&quot;,&quot;submission_time_micros&quot;:&quot;1653372516881173&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.80334127,&quot;vehicles_observed_iou&quot;:0.23493125,&quot;vehicles_occluded_auc&quot;:0.16497822,&quot;vehicles_occluded_iou&quot;:0.016911816,&quot;vehicles_flow_epe&quot;:3.671718,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8388843,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.6327818,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;ceb015b9-a99b&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.80334127,&quot;vehicles_observed_iou&quot;:0.23493125,&quot;vehicles_occluded_auc&quot;:0.16497822,&quot;vehicles_occluded_iou&quot;:0.016911816,&quot;vehicles_flow_epe&quot;:3.671718,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8388843,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.6327818,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653372516881,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/ceb015b9-a99b/1653372516881173/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1652716508079921&quot;,&quot;method_name&quot;:&quot;3D-STCNN&quot;,&quot;submission_time_micros&quot;:&quot;1652716508079921&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.68775177,&quot;vehicles_observed_iou&quot;:0.4042787,&quot;vehicles_occluded_auc&quot;:0.11438499,&quot;vehicles_occluded_iou&quot;:0.021054393,&quot;vehicles_flow_epe&quot;:4.221788,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.73221654,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46344858,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;00f4beba-6e9d&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.68775177,&quot;vehicles_observed_iou&quot;:0.4042787,&quot;vehicles_occluded_auc&quot;:0.11438499,&quot;vehicles_occluded_iou&quot;:0.021054393,&quot;vehicles_flow_epe&quot;:4.221788,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.73221654,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46344858,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1652716508079,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/00f4beba-6e9d/1652716508079921/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653309977776583&quot;,&quot;method_name&quot;:&quot;3D-STCNN&quot;,&quot;submission_time_micros&quot;:&quot;1653309977776583&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.69091254,&quot;vehicles_observed_iou&quot;:0.4122753,&quot;vehicles_occluded_auc&quot;:0.11528068,&quot;vehicles_occluded_iou&quot;:0.021098241,&quot;vehicles_flow_epe&quot;:4.180956,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7332595,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46843383,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;00f4beba-6e9d&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.69091254,&quot;vehicles_observed_iou&quot;:0.4122753,&quot;vehicles_occluded_auc&quot;:0.11528068,&quot;vehicles_occluded_iou&quot;:0.021098241,&quot;vehicles_flow_epe&quot;:4.180956,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7332595,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46843383,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653309977776,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/00f4beba-6e9d/1653309977776583/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1745582744815000&quot;,&quot;method_name&quot;:&quot;CCLSTM&quot;,&quot;submission_time_micros&quot;:&quot;1745582744815000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7916616,&quot;vehicles_observed_iou&quot;:0.5028517,&quot;vehicles_occluded_auc&quot;:0.1964959,&quot;vehicles_occluded_iou&quot;:0.06031265,&quot;vehicles_flow_epe&quot;:3.083732,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8068866,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.6114087,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;e2729e23-8df8&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7916616,&quot;vehicles_observed_iou&quot;:0.5028517,&quot;vehicles_occluded_auc&quot;:0.1964959,&quot;vehicles_occluded_iou&quot;:0.06031265,&quot;vehicles_flow_epe&quot;:3.083732,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8068866,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.6114087,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1745582744815,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/e2729e23-8df8/1745582744815000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1746921349583000&quot;,&quot;method_name&quot;:&quot;CCLSTM&quot;,&quot;submission_time_micros&quot;:&quot;1746921349583000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.8153538,&quot;vehicles_observed_iou&quot;:0.53206104,&quot;vehicles_occluded_auc&quot;:0.2077225,&quot;vehicles_occluded_iou&quot;:0.06055188,&quot;vehicles_flow_epe&quot;:2.683076,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.81964064,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.6255904,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;31M&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;e2729e23-8df8&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.8153538,&quot;vehicles_observed_iou&quot;:0.53206104,&quot;vehicles_occluded_auc&quot;:0.2077225,&quot;vehicles_occluded_iou&quot;:0.06055188,&quot;vehicles_flow_epe&quot;:2.683076,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.81964064,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.6255904,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1746921349583,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/e2729e23-8df8/1746921349583000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653352230419160&quot;,&quot;method_name&quot;:&quot;VectorFlow&quot;,&quot;submission_time_micros&quot;:&quot;1653352230419160&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7547668,&quot;vehicles_observed_iou&quot;:0.48843342,&quot;vehicles_occluded_auc&quot;:0.17362535,&quot;vehicles_occluded_iou&quot;:0.04479087,&quot;vehicles_flow_epe&quot;:3.5826538,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7669043,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5297757,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;f3906c0f-8aa7&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7547668,&quot;vehicles_observed_iou&quot;:0.48843342,&quot;vehicles_occluded_auc&quot;:0.17362535,&quot;vehicles_occluded_iou&quot;:0.04479087,&quot;vehicles_flow_epe&quot;:3.5826538,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7669043,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5297757,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653352230419,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/f3906c0f-8aa7/1653352230419160/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653274836593751&quot;,&quot;method_name&quot;:&quot;FTLS&quot;,&quot;submission_time_micros&quot;:&quot;1653274836593751&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.6178964,&quot;vehicles_observed_iou&quot;:0.31764588,&quot;vehicles_occluded_auc&quot;:0.08498705,&quot;vehicles_occluded_iou&quot;:0.01908185,&quot;vehicles_flow_epe&quot;:9.611807,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.6885295,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4305206,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;e5c53edc-7f18&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.6178964,&quot;vehicles_observed_iou&quot;:0.31764588,&quot;vehicles_occluded_auc&quot;:0.08498705,&quot;vehicles_occluded_iou&quot;:0.01908185,&quot;vehicles_flow_epe&quot;:9.611807,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.6885295,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4305206,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653274836593,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/e5c53edc-7f18/1653274836593751/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1652717476909482&quot;,&quot;method_name&quot;:&quot;Spatial-temporal convolutional network&quot;,&quot;submission_time_micros&quot;:&quot;1652717476909482&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.561024,&quot;vehicles_observed_iou&quot;:0.2616083,&quot;vehicles_occluded_auc&quot;:0.08765267,&quot;vehicles_occluded_iou&quot;:0.028540077,&quot;vehicles_flow_epe&quot;:6.970967,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.6136298,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.43854153,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;fb2b26a9-ceb9&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.561024,&quot;vehicles_observed_iou&quot;:0.2616083,&quot;vehicles_occluded_auc&quot;:0.08765267,&quot;vehicles_occluded_iou&quot;:0.028540077,&quot;vehicles_flow_epe&quot;:6.970967,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.6136298,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.43854153,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1652717476909,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/fb2b26a9-ceb9/1652717476909482/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653321432688149&quot;,&quot;method_name&quot;:&quot;Anonymous submission&quot;,&quot;submission_time_micros&quot;:&quot;1653321432688149&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.72967863,&quot;vehicles_observed_iou&quot;:0.45324597,&quot;vehicles_occluded_auc&quot;:0.14852613,&quot;vehicles_occluded_iou&quot;:0.032249186,&quot;vehicles_flow_epe&quot;:4.596585,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7422418,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.49866834,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;fb2b26a9-ceb9&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.72967863,&quot;vehicles_observed_iou&quot;:0.45324597,&quot;vehicles_occluded_auc&quot;:0.14852613,&quot;vehicles_occluded_iou&quot;:0.032249186,&quot;vehicles_flow_epe&quot;:4.596585,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7422418,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.49866834,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653321432688,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/fb2b26a9-ceb9/1653321432688149/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1662149279863083&quot;,&quot;method_name&quot;:&quot;Spatial Temporal Convolution&quot;,&quot;submission_time_micros&quot;:&quot;1662149279863083&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.74383056,&quot;vehicles_observed_iou&quot;:0.21734919,&quot;vehicles_occluded_auc&quot;:0.16795768,&quot;vehicles_occluded_iou&quot;:0.018854309,&quot;vehicles_flow_epe&quot;:3.8705347,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7653285,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.537552,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;fb2b26a9-ceb9&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.74383056,&quot;vehicles_observed_iou&quot;:0.21734919,&quot;vehicles_occluded_auc&quot;:0.16795768,&quot;vehicles_occluded_iou&quot;:0.018854309,&quot;vehicles_flow_epe&quot;:3.8705347,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7653285,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.537552,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1662149279863,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/fb2b26a9-ceb9/1662149279863083/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653221427557390&quot;,&quot;method_name&quot;:&quot;Look Around&quot;,&quot;submission_time_micros&quot;:&quot;1653221427557390&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.8013684,&quot;vehicles_observed_iou&quot;:0.23356304,&quot;vehicles_occluded_auc&quot;:0.13857295,&quot;vehicles_occluded_iou&quot;:0.028522788,&quot;vehicles_flow_epe&quot;:2.6190956,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8245918,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.54879165,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;65326a30-d85b&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.8013684,&quot;vehicles_observed_iou&quot;:0.23356304,&quot;vehicles_occluded_auc&quot;:0.13857295,&quot;vehicles_occluded_iou&quot;:0.028522788,&quot;vehicles_flow_epe&quot;:2.6190956,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8245918,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.54879165,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653221427557,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/65326a30-d85b/1653221427557390/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653360016464976&quot;,&quot;method_name&quot;:&quot;STrajNet&quot;,&quot;submission_time_micros&quot;:&quot;1653360016464976&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7505766,&quot;vehicles_observed_iou&quot;:0.48381558,&quot;vehicles_occluded_auc&quot;:0.1599464,&quot;vehicles_occluded_iou&quot;:0.018796222,&quot;vehicles_flow_epe&quot;:3.616249,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7762633,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5570868,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;2ce78924-5675&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7505766,&quot;vehicles_observed_iou&quot;:0.48381558,&quot;vehicles_occluded_auc&quot;:0.1599464,&quot;vehicles_occluded_iou&quot;:0.018796222,&quot;vehicles_flow_epe&quot;:3.616249,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7762633,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5570868,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653360016464,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/2ce78924-5675/1653360016464976/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653370424948849&quot;,&quot;method_name&quot;:&quot;STrajNet&quot;,&quot;submission_time_micros&quot;:&quot;1653370424948849&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7514477,&quot;vehicles_observed_iou&quot;:0.48176628,&quot;vehicles_occluded_auc&quot;:0.16103321,&quot;vehicles_occluded_iou&quot;:0.018254468,&quot;vehicles_flow_epe&quot;:3.5866923,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7771861,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.55510384,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;2ce78924-5675&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7514477,&quot;vehicles_observed_iou&quot;:0.48176628,&quot;vehicles_occluded_auc&quot;:0.16103321,&quot;vehicles_occluded_iou&quot;:0.018254468,&quot;vehicles_flow_epe&quot;:3.5866923,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7771861,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.55510384,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653370424948,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/2ce78924-5675/1653370424948849/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1662056165470414&quot;,&quot;method_name&quot;:&quot;STrajNet+&quot;,&quot;submission_time_micros&quot;:&quot;1662056165470414&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7775462,&quot;vehicles_observed_iou&quot;:0.4909094,&quot;vehicles_occluded_auc&quot;:0.17780805,&quot;vehicles_occluded_iou&quot;:0.04498788,&quot;vehicles_flow_epe&quot;:3.2036498,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.78544235,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.53014743,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;2ce78924-5675&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7775462,&quot;vehicles_observed_iou&quot;:0.4909094,&quot;vehicles_occluded_auc&quot;:0.17780805,&quot;vehicles_occluded_iou&quot;:0.04498788,&quot;vehicles_flow_epe&quot;:3.2036498,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.78544235,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.53014743,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1662056165470,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/2ce78924-5675/1662056165470414/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1693057276545754&quot;,&quot;method_name&quot;:&quot;DOPP&quot;,&quot;submission_time_micros&quot;:&quot;1693057276545754&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7972452,&quot;vehicles_observed_iou&quot;:0.34289286,&quot;vehicles_occluded_auc&quot;:0.19369549,&quot;vehicles_occluded_iou&quot;:0.024149895,&quot;vehicles_flow_epe&quot;:2.9573898,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8026036,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.51558876,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;2ce78924-5675&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7972452,&quot;vehicles_observed_iou&quot;:0.34289286,&quot;vehicles_occluded_auc&quot;:0.19369549,&quot;vehicles_occluded_iou&quot;:0.024149895,&quot;vehicles_flow_epe&quot;:2.9573898,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8026036,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.51558876,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1693057276545,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/2ce78924-5675/1693057276545754/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1710817382649000&quot;,&quot;method_name&quot;:&quot;DOPP&quot;,&quot;submission_time_micros&quot;:&quot;1710817382649000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7972452,&quot;vehicles_observed_iou&quot;:0.34289286,&quot;vehicles_occluded_auc&quot;:0.19369549,&quot;vehicles_occluded_iou&quot;:0.024149895,&quot;vehicles_flow_epe&quot;:2.9573898,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8026036,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.51558876,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;2ce78924-5675&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7972452,&quot;vehicles_observed_iou&quot;:0.34289286,&quot;vehicles_occluded_auc&quot;:0.19369549,&quot;vehicles_occluded_iou&quot;:0.024149895,&quot;vehicles_flow_epe&quot;:2.9573898,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.8026036,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.51558876,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1710817382649,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/2ce78924-5675/1710817382649000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1686662695061710&quot;,&quot;method_name&quot;:&quot;&quot;,&quot;submission_time_micros&quot;:&quot;1686662695061710&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7000895,&quot;vehicles_observed_iou&quot;:0.37989232,&quot;vehicles_occluded_auc&quot;:0.12437684,&quot;vehicles_occluded_iou&quot;:0.024702033,&quot;vehicles_flow_epe&quot;:3.8040187,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.75515777,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4493145,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;6ecdad48-082f&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7000895,&quot;vehicles_observed_iou&quot;:0.37989232,&quot;vehicles_occluded_auc&quot;:0.12437684,&quot;vehicles_occluded_iou&quot;:0.024702033,&quot;vehicles_flow_epe&quot;:3.8040187,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.75515777,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4493145,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1686662695061,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/6ecdad48-082f/1686662695061710/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1709859557442000&quot;,&quot;method_name&quot;:&quot;Test eval server&quot;,&quot;submission_time_micros&quot;:&quot;1709859557442000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.030656936,&quot;vehicles_observed_iou&quot;:0,&quot;vehicles_occluded_auc&quot;:0.006958271,&quot;vehicles_occluded_iou&quot;:0,&quot;vehicles_flow_epe&quot;:18.79667,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.035390705,&quot;vehicles_flow_warped_occupancy_iou&quot;:0,&quot;num_waypoints_with_observed_occupancy&quot;:248,&quot;num_waypoints_with_occluded_occupancy&quot;:174,&quot;num_waypoints_with_flow&quot;:249}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;6c8c945b-bfdf&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.030656936,&quot;vehicles_observed_iou&quot;:0,&quot;vehicles_occluded_auc&quot;:0.006958271,&quot;vehicles_occluded_iou&quot;:0,&quot;vehicles_flow_epe&quot;:18.79667,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.035390705,&quot;vehicles_flow_warped_occupancy_iou&quot;:0,&quot;num_waypoints_with_observed_occupancy&quot;:248,&quot;num_waypoints_with_occluded_occupancy&quot;:174,&quot;num_waypoints_with_flow&quot;:249,&quot;submission_time&quot;:1709859557442,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/6c8c945b-bfdf/1709859557442000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1716423141472000&quot;,&quot;method_name&quot;:&quot;STNet&quot;,&quot;submission_time_micros&quot;:&quot;1716423141472000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7551697,&quot;vehicles_observed_iou&quot;:0.22988059,&quot;vehicles_occluded_auc&quot;:0.16583446,&quot;vehicles_occluded_iou&quot;:0.01802812,&quot;vehicles_flow_epe&quot;:3.3778777,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7564281,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.44314212,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:true,&quot;num_model_parameters&quot;:&quot;41M&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;d30e82c9-4dcd&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7551697,&quot;vehicles_observed_iou&quot;:0.22988059,&quot;vehicles_occluded_auc&quot;:0.16583446,&quot;vehicles_occluded_iou&quot;:0.01802812,&quot;vehicles_flow_epe&quot;:3.3778777,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7564281,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.44314212,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1716423141472,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/d30e82c9-4dcd/1716423141472000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1716258265622000&quot;,&quot;method_name&quot;:&quot;STrajNet&quot;,&quot;submission_time_micros&quot;:&quot;1716258265622000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.75144744,&quot;vehicles_observed_iou&quot;:0.48176575,&quot;vehicles_occluded_auc&quot;:0.1610333,&quot;vehicles_occluded_iou&quot;:0.018254476,&quot;vehicles_flow_epe&quot;:3.5866935,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7771855,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.55510354,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;24&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;5e48d5ea-94fc&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.75144744,&quot;vehicles_observed_iou&quot;:0.48176575,&quot;vehicles_occluded_auc&quot;:0.1610333,&quot;vehicles_occluded_iou&quot;:0.018254476,&quot;vehicles_flow_epe&quot;:3.5866935,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7771855,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.55510354,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1716258265622,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/5e48d5ea-94fc/1716258265622000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1716259135932000&quot;,&quot;method_name&quot;:&quot;VectorFlow&quot;,&quot;submission_time_micros&quot;:&quot;1716259135932000&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7547647,&quot;vehicles_observed_iou&quot;:0.48843342,&quot;vehicles_occluded_auc&quot;:0.17362505,&quot;vehicles_occluded_iou&quot;:0.044790886,&quot;vehicles_flow_epe&quot;:3.5826602,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.76690245,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5297742,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;24&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;5e48d5ea-94fc&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7547647,&quot;vehicles_observed_iou&quot;:0.48843342,&quot;vehicles_occluded_auc&quot;:0.17362505,&quot;vehicles_occluded_iou&quot;:0.044790886,&quot;vehicles_flow_epe&quot;:3.5826602,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.76690245,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5297742,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1716259135932,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/5e48d5ea-94fc/1716259135932000/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653212519429625&quot;,&quot;method_name&quot;:&quot;Motionnet&quot;,&quot;submission_time_micros&quot;:&quot;1653212519429625&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.69405425,&quot;vehicles_observed_iou&quot;:0.41139692,&quot;vehicles_occluded_auc&quot;:0.14134644,&quot;vehicles_occluded_iou&quot;:0.030915974,&quot;vehicles_flow_epe&quot;:4.2750893,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.73242706,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46908963,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;df456d38-e147&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.69405425,&quot;vehicles_observed_iou&quot;:0.41139692,&quot;vehicles_occluded_auc&quot;:0.14134644,&quot;vehicles_occluded_iou&quot;:0.030915974,&quot;vehicles_flow_epe&quot;:4.2750893,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.73242706,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46908963,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653212519429,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/df456d38-e147/1653212519429625/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1675248839997185&quot;,&quot;method_name&quot;:&quot;DeepRoute-Prediction&quot;,&quot;submission_time_micros&quot;:&quot;1675248839997185&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.67418694,&quot;vehicles_observed_iou&quot;:0.5024449,&quot;vehicles_occluded_auc&quot;:0.0069036367,&quot;vehicles_occluded_iou&quot;:0.0069225705,&quot;vehicles_flow_epe&quot;:5.371174,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.60047174,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5031785,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;46209125-f598&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.67418694,&quot;vehicles_observed_iou&quot;:0.5024449,&quot;vehicles_occluded_auc&quot;:0.0069036367,&quot;vehicles_occluded_iou&quot;:0.0069225705,&quot;vehicles_flow_epe&quot;:5.371174,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.60047174,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5031785,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1675248839997,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/46209125-f598/1675248839997185/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1676263037687965&quot;,&quot;method_name&quot;:&quot;YRNet&quot;,&quot;submission_time_micros&quot;:&quot;1676263037687965&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.71163166,&quot;vehicles_observed_iou&quot;:0.5083173,&quot;vehicles_occluded_auc&quot;:0.0070122546,&quot;vehicles_occluded_iou&quot;:0.0071569737,&quot;vehicles_flow_epe&quot;:5.0269494,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.617244,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5152124,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;46209125-f598&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.71163166,&quot;vehicles_observed_iou&quot;:0.5083173,&quot;vehicles_occluded_auc&quot;:0.0070122546,&quot;vehicles_occluded_iou&quot;:0.0071569737,&quot;vehicles_flow_epe&quot;:5.0269494,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.617244,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.5152124,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1676263037687,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/46209125-f598/1676263037687965/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1651850672998514&quot;,&quot;method_name&quot;:&quot;R2AttU_T2&quot;,&quot;submission_time_micros&quot;:&quot;1651850672998514&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.4759339,&quot;vehicles_observed_iou&quot;:0.20057516,&quot;vehicles_occluded_auc&quot;:0.04027487,&quot;vehicles_occluded_iou&quot;:0.0065396107,&quot;vehicles_flow_epe&quot;:21.557652,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.48461965,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.20076552,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;6b798778-af63&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.4759339,&quot;vehicles_observed_iou&quot;:0.20057516,&quot;vehicles_occluded_auc&quot;:0.04027487,&quot;vehicles_occluded_iou&quot;:0.0065396107,&quot;vehicles_flow_epe&quot;:21.557652,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.48461965,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.20076552,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1651850672998,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/6b798778-af63/1651850672998514/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653308115426580&quot;,&quot;method_name&quot;:&quot;OFPNet-ULSTM&quot;,&quot;submission_time_micros&quot;:&quot;1653308115426580&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.648453,&quot;vehicles_observed_iou&quot;:0.38228187,&quot;vehicles_occluded_auc&quot;:0.1242151,&quot;vehicles_occluded_iou&quot;:0.022977695,&quot;vehicles_flow_epe&quot;:20.077116,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.57991546,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4070437,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;6b798778-af63&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.648453,&quot;vehicles_observed_iou&quot;:0.38228187,&quot;vehicles_occluded_auc&quot;:0.1242151,&quot;vehicles_occluded_iou&quot;:0.022977695,&quot;vehicles_flow_epe&quot;:20.077116,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.57991546,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.4070437,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653308115426,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/6b798778-af63/1653308115426580/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1676214532785900&quot;,&quot;method_name&quot;:&quot;OFMPNet&quot;,&quot;submission_time_micros&quot;:&quot;1676214532785900&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7694213,&quot;vehicles_observed_iou&quot;:0.5020966,&quot;vehicles_occluded_auc&quot;:0.16509588,&quot;vehicles_occluded_iou&quot;:0.04232666,&quot;vehicles_flow_epe&quot;:3.5867858,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.761365,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.53774273,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;1ac806e7-ca1f&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7694213,&quot;vehicles_observed_iou&quot;:0.5020966,&quot;vehicles_occluded_auc&quot;:0.16509588,&quot;vehicles_occluded_iou&quot;:0.04232666,&quot;vehicles_flow_epe&quot;:3.5867858,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.761365,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.53774273,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1676214532785,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/1ac806e7-ca1f/1676214532785900/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653328462047480&quot;,&quot;method_name&quot;:&quot;Temporal Query*&quot;,&quot;submission_time_micros&quot;:&quot;1653328462047480&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7374091,&quot;vehicles_observed_iou&quot;:0.43495256,&quot;vehicles_occluded_auc&quot;:0.15418525,&quot;vehicles_occluded_iou&quot;:0.038119998,&quot;vehicles_flow_epe&quot;:3.4778478,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7565267,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46640822,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;a33b0d1a-2172&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7374091,&quot;vehicles_observed_iou&quot;:0.43495256,&quot;vehicles_occluded_auc&quot;:0.15418525,&quot;vehicles_occluded_iou&quot;:0.038119998,&quot;vehicles_flow_epe&quot;:3.4778478,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7565267,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46640822,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653328462047,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/a33b0d1a-2172/1653328462047480/&quot;,&quot;latency&quot;:0},{&quot;id&quot;:&quot;1653368105393334&quot;,&quot;method_name&quot;:&quot;Temporal Query - Stable*&quot;,&quot;submission_time_micros&quot;:&quot;1653368105393334&quot;,&quot;occupancy_flow_metrics&quot;:[{&quot;vehicles_observed_auc&quot;:0.7565036,&quot;vehicles_observed_iou&quot;:0.39341632,&quot;vehicles_occluded_auc&quot;:0.17070879,&quot;vehicles_occluded_iou&quot;:0.04035665,&quot;vehicles_flow_epe&quot;:3.307535,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7784481,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46544376,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369}],&quot;uses_lidar_data&quot;:false,&quot;uses_camera_data&quot;:false,&quot;uses_public_model_pretraining&quot;:false,&quot;num_model_parameters&quot;:&quot;&quot;,&quot;public_model_names&quot;:[],&quot;keypoint_metrics&quot;:[],&quot;sim_agent_metrics&quot;:[],&quot;camera_segmentation_metrics&quot;:[],&quot;e2e_driving_metrics&quot;:[],&quot;obfuscated_email&quot;:&quot;a33b0d1a-2172&quot;,&quot;past_frames&quot;:&quot;[-undefined, +0]&quot;,&quot;vehicles_observed_auc&quot;:0.7565036,&quot;vehicles_observed_iou&quot;:0.39341632,&quot;vehicles_occluded_auc&quot;:0.17070879,&quot;vehicles_occluded_iou&quot;:0.04035665,&quot;vehicles_flow_epe&quot;:3.307535,&quot;vehicles_flow_warped_occupancy_auc&quot;:0.7784481,&quot;vehicles_flow_warped_occupancy_iou&quot;:0.46544376,&quot;num_waypoints_with_observed_occupancy&quot;:34114,&quot;num_waypoints_with_occluded_occupancy&quot;:24431,&quot;num_waypoints_with_flow&quot;:34369,&quot;submission_time&quot;:1653368105393,&quot;url&quot;:&quot;/open/challenges/occupancy-flow/results/a33b0d1a-2172/1653368105393334/&quot;,&quot;latency&quot;:0}]}" class="_grid_1rc1t_1"></w-open-leaderboard></div><section class="_section_1ibd0_5"><h2>Submit</h2><p>Submissions for this version of the challenge are closed. You can submit to the <a href="/open/challenges/2024/occupancy-flow-prediction/">2024 version of the Occupancy and Flow Prediction challenge</a>.</p><div class="_publishForm_1ibd0_150 _component_tr47d_1"><div class="_title_tr47d_10">Sign in to submit</div><p>You must be signed in to upload submissions. Please sign in to continue.</p><a href="/open/auth/login?continue=https%3A%2F%2Fwaymo.com%2Fopen%2Fchallenges%2F2022%2Foccupancy-flow-prediction-challenge%2F" type="submit" class="_button_tr47d_37">Sign in</a></div></section><section class="_section_1ibd0_5"><h2 id="rules-regarding-awards" class="_h2_c3gu3_89">Rules Regarding Awards</h2><p>See the <a href="https://waymo.com/open/challenges/terms">Official Challenge Rules here</a>.</p></section></div></w-mathjax></main><footer class="_footer_1sv3w_2 _theme:open_1sv3w_41"><div class="_footerContent_1sv3w_56"><a href="/" aria-label="Home" class="_home_1sv3w_73"><div role="img" aria-label="Waymo Logo"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 65 46" fill="none"><path d="M29.765 14.3678L21.9292 27.8241L27.7998 31.1633L35.6355 17.707L29.765 14.3678Z" fill="#0583FF"></path><path d="M45.4368 14.3678L37.601 27.8241L43.4715 31.1633L51.3073 17.707L45.4368 14.3678Z" fill="#0583FF"></path><path d="M51.7593 16.0372C51.7593 16.6993 51.5606 17.3465 51.1884 17.897C50.8163 18.4475 50.2873 18.8766 49.6684 19.13C49.0495 19.3833 48.3684 19.4496 47.7114 19.3205C47.0544 19.1913 46.4509 18.8725 45.9772 18.4043C45.5035 17.9361 45.1809 17.3397 45.0502 16.6903C44.9195 16.0409 44.9866 15.3679 45.2429 14.7562C45.4993 14.1445 45.9334 13.6217 46.4904 13.2538C47.0474 12.886 47.7023 12.6897 48.3722 12.6897C48.817 12.6897 49.2574 12.7762 49.6684 12.9445C50.0793 13.1127 50.4527 13.3593 50.7672 13.6701C51.0817 13.981 51.3312 14.35 51.5015 14.7562C51.6717 15.1623 51.7593 15.5976 51.7593 16.0372Z" fill="#00EBA7"></path><path d="M24.8677 32.8415C24.2718 32.8421 23.6863 32.6873 23.1703 32.3926C22.6544 32.098 22.2262 31.6739 21.9292 31.1633L14.0934 17.707C13.6453 16.9376 13.5249 16.0238 13.7586 15.1667C13.9922 14.3095 14.5609 13.5792 15.3393 13.1364C16.1178 12.6936 17.0424 12.5746 17.9097 12.8055C18.777 13.0365 19.5159 13.5984 19.9639 14.3678L27.7998 27.8242C28.0958 28.3329 28.2514 28.9096 28.2508 29.4965C28.2503 30.0833 28.0937 30.6598 27.7967 31.1679C27.4997 31.6761 27.0728 32.0983 26.5587 32.392C26.0446 32.6857 25.4615 32.8407 24.8677 32.8415V32.8415Z" fill="#00EBA7"></path><path d="M40.5392 32.8415C39.9433 32.8421 39.3578 32.6872 38.8419 32.3926C38.326 32.0979 37.8979 31.6739 37.6008 31.1633L29.765 17.707C29.317 16.9376 29.1965 16.0238 29.4302 15.1667C29.6639 14.3095 30.2325 13.5792 31.011 13.1364C31.3964 12.9172 31.8218 12.7751 32.2628 12.7183C32.7039 12.6615 33.1519 12.6912 33.5813 12.8055C34.4486 13.0365 35.1875 13.5984 35.6356 14.3678L43.4714 27.8241C43.7674 28.3329 43.923 28.9096 43.9224 29.4965C43.9219 30.0833 43.7653 30.6597 43.4683 31.1679C43.1713 31.6761 42.7444 32.0982 42.2303 32.392C41.7162 32.6857 41.133 32.8407 40.5392 32.8415Z" fill="#00EBA7"></path></svg></div></a><nav aria-label="Waymo pages" class="_nav_1sv3w_84"><ul class="_links_1sv3w_94"><li class="_linksItem_1sv3w_108"><a href="/faq/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">FAQ</a></li><li class="_linksItem_1sv3w_108"><a href="/business" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Waymo for Business</a></li><li class="_linksItem_1sv3w_108"><a href="https://blog.waymo.com/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Blog</a></li><li class="_linksItem_1sv3w_108"><a href="/privacy/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Privacy Policy</a></li><li class="_linksItem_1sv3w_108"><a href="/research/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Research</a></li><li class="_linksItem_1sv3w_108"><a href="/terms/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Terms</a></li><li class="_linksItem_1sv3w_108"><a href="/legal/patents/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Legal</a></li><li class="_linksItem_1sv3w_108"><a href="/zero-tolerance/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Zero Tolerance</a></li><li class="_linksItem_1sv3w_108"><a href="/first-responders/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">First Responders</a></li><li class="_linksItem_1sv3w_108"><a href="/safety/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Safety Publications</a></li><li class="_linksItem_1sv3w_108"><a href="/community" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Waymo Community</a></li><li class="_linksItem_1sv3w_108"><a href="/contact/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Contact Us</a></li><li class="_linksItem_1sv3w_108"><a href="https://support.google.com/waymo" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Waymo Help Center</a></li><li class="_linksItem_1sv3w_108"><a href="/sustainability/" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Sustainability</a></li><li class="_linksItem_1sv3w_108"><a href="https://support.google.com/waymo/answer/9681942" data-tracking="{}" class="_link_1hbc4_11 variant:plain color:black">Notice to CA Residents</a></li><li class="_linksItem_1sv3w_108"><button type="button" data-open-consent-settings="true" class="_linksItemButton_1sv3w_123">Cookie Settings</button></li></ul></nav><section class="_signUp_1sv3w_166"><div class="_markdown_1o1pf_1 md"><p>Sign up for updates to get the latest on Waymo.</p>
+</div><a href="/updates/" data-tracking="{&quot;event&quot;:&quot;newsletter_cta&quot;,&quot;click_text&quot;:&quot;Sign up&quot;,&quot;section_title&quot;:&quot;footer&quot;}" class="_link_1hbc4_11 variant:primary color:blue">Sign up</a></section><div class="_container_1x4u5_1 _languageSelector_1sv3w_49"><svg aria-hidden="true" class="_icon_1x4u5_9"><use href="/assets/BU31Xvf-.svg#globe"></use></svg><label for="language-picker" class="_label_1x4u5_16">Select language</label><select id="language-picker" data-language-selector="true" class="_select_1x4u5_26"><option value="/open/challenges/2022/occupancy-flow-prediction-challenge/" selected>English</option><option value="/intl/es/open/challenges/2022/occupancy-flow-prediction-challenge/">Español</option><option value="/intl/fil/open/challenges/2022/occupancy-flow-prediction-challenge/">Filipino</option><option value="/intl/it/open/challenges/2022/occupancy-flow-prediction-challenge/">Italiano</option><option value="/intl/jp/open/challenges/2022/occupancy-flow-prediction-challenge/">日本語</option><option value="/intl/zh-cn/open/challenges/2022/occupancy-flow-prediction-challenge/">中文（简体中文）</option><option value="/intl/zh-tw/open/challenges/2022/occupancy-flow-prediction-challenge/">中文（繁體中文）</option></select></div><hr class="_divider_1sv3w_194"/><ul class="_socials_1sv3w_52"><li><a href="https://twitter.com/waymo/" data-tracking="{}" title="Waymo on X" class="_link_1hbc4_11 variant:plain color:white"><svg aria-hidden="false" aria-label="Waymo on X" class="_logo-twitter_1sv3w_238"><use href="/assets/BDOs7_Uj.svg#logo-twitter"></use></svg></a></li><li><a href="https://www.linkedin.com/company/waymo" data-tracking="{}" title="Waymo on LinkedIn" class="_link_1hbc4_11 variant:plain color:white"><svg aria-hidden="false" aria-label="Waymo on LinkedIn" class="_logo-linkedin_1sv3w_242"><use href="/assets/BDOs7_Uj.svg#logo-linkedin"></use></svg></a></li><li><a href="https://www.instagram.com/waymo/?hl=en" data-tracking="{}" title="Waymo on Instagram" class="_link_1hbc4_11 variant:plain color:white"><svg aria-hidden="false" aria-label="Waymo on Instagram" class="_logo-instagram_1sv3w_246"><use href="/assets/BDOs7_Uj.svg#logo-instagram"></use></svg></a></li><li><a href="https://facebook.com/waymo/" data-tracking="{}" title="Waymo on Facebook" class="_link_1hbc4_11 variant:plain color:white"><svg aria-hidden="false" aria-label="Waymo on Facebook" class="_logo-facebook_1sv3w_250"><use href="/assets/BDOs7_Uj.svg#logo-facebook"></use></svg></a></li><li><a href="https://www.youtube.com/waymo" data-tracking="{}" title="Waymo on YouTube" class="_link_1hbc4_11 variant:plain color:white"><svg aria-hidden="false" aria-label="Waymo on YouTube" class="_logo-youtube_1sv3w_254"><use href="/assets/BDOs7_Uj.svg#logo-youtube"></use></svg></a></li><li><a href="https://www.tiktok.com/@waymo" data-tracking="{}" title="Waymo on Tiktok" class="_link_1hbc4_11 variant:plain color:white"><svg aria-hidden="false" aria-label="Waymo on Tiktok" class="_logo-tiktok_1sv3w_258"><use href="/assets/BDOs7_Uj.svg#logo-tiktok"></use></svg></a></li></ul><p class="_copyright_1sv3w_279">© 2019-2026 Waymo LLC</p></div></footer></div><root-consent><style nonce="8P+ok3aDkYaoYzRuwVC7Fg==">/* Styles for the <root-consent> banner + preference center. Scoped under the
+ * custom element tag so they can't leak into the host page. Injected inline
+ * (CSP nonce) by the SSR template, kept small for the critical path.
+ *
+ * The custom properties below are the theming surface: a site can restyle the
+ * banner by setting them on `root-consent` (or any ancestor) from its own CSS.
+ */
+root-consent {
+  --rc-bg: #ffffff;
+  --rc-fg: #202124;
+  --rc-muted: #5f6368;
+  --rc-border: #dadce0;
+  --rc-accent: #1a73e8;
+  --rc-accent-hover: #1765cc;
+  --rc-accent-fg: #ffffff;
+  --rc-radius: 12px;
+}
+
+root-consent [hidden] {
+  display: none !important;
+}
+
+root-consent .rc-banner {
+  position: fixed;
+  z-index: 2147483000;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  max-width: 560px;
+  margin-inline: auto;
+  background: var(--rc-bg);
+  color: var(--rc-fg);
+  border: 1px solid var(--rc-border);
+  border-radius: var(--rc-radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  padding: 20px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+root-consent .rc-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+root-consent .rc-body {
+  margin: 0 0 16px;
+  color: var(--rc-muted);
+}
+
+root-consent .rc-body p {
+  margin: 0 0 8px;
+}
+
+root-consent .rc-body p:last-child {
+  margin-bottom: 0;
+}
+
+root-consent .rc-body a {
+  color: var(--rc-accent);
+}
+
+root-consent .rc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+root-consent .rc-btn {
+  appearance: none;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid var(--rc-border);
+  background: var(--rc-bg);
+  color: var(--rc-fg);
+  padding: 9px 18px;
+  font: inherit;
+  font-weight: 500;
+}
+
+root-consent .rc-btn:hover {
+  background: #f1f3f4;
+}
+
+root-consent .rc-btn--primary {
+  background: var(--rc-accent);
+  border-color: var(--rc-accent);
+  color: var(--rc-accent-fg);
+}
+
+root-consent .rc-btn--primary:hover {
+  background: var(--rc-accent-hover);
+}
+
+/* Less-prominent "Manage Preferences" / "Save Preferences" action: styled as a
+ * text link so the primary Accept All / Reject All buttons stay dominant and
+ * visually equivalent to each other. */
+root-consent .rc-btn--link {
+  background: transparent;
+  border-color: transparent;
+  color: var(--rc-accent);
+  padding-inline: 8px;
+  text-decoration: underline;
+}
+
+root-consent .rc-btn--link:hover {
+  background: transparent;
+  text-decoration: none;
+}
+
+root-consent .rc-btn:focus-visible {
+  outline: 2px solid var(--rc-accent);
+  outline-offset: 2px;
+}
+
+/* Preference center (modal) */
+root-consent .rc-prefs {
+  position: fixed;
+  z-index: 2147483001;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(32, 33, 36, 0.5);
+}
+
+root-consent .rc-prefs-dialog {
+  background: var(--rc-bg);
+  color: var(--rc-fg);
+  border-radius: var(--rc-radius);
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow: auto;
+  padding: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+root-consent .rc-prefs-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+root-consent .rc-cat {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rc-border);
+}
+
+root-consent .rc-cat-text {
+  flex: 1;
+}
+
+root-consent .rc-cat-name {
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+
+root-consent .rc-cat-desc {
+  color: var(--rc-muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Legal note above the preference-center actions. Sits below the last
+ * category, so it takes the same top border the categories use. */
+root-consent .rc-prefs-note {
+  border-top: 1px solid var(--rc-border);
+  padding-top: 14px;
+  color: var(--rc-muted);
+  font-size: 13px;
+}
+
+root-consent .rc-prefs-note p {
+  margin: 0 0 8px;
+}
+
+root-consent .rc-prefs-note p:last-child {
+  margin-bottom: 0;
+}
+
+root-consent .rc-prefs-note a {
+  color: var(--rc-accent);
+}
+
+/* Collapse the note's spacing when the CMS leaves it empty. */
+root-consent .rc-prefs-note:empty {
+  display: none;
+}
+
+root-consent .rc-prefs-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  root-consent .rc-banner {
+    animation: rc-slide-up 0.18s ease-out;
+  }
+}
+
+@keyframes rc-slide-up {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+</style><div data-consent-banner="true" hidden role="dialog" aria-modal="false" aria-label="We value your privacy" aria-describedby="rc-banner-body" class="rc-banner"><p class="rc-title">We value your privacy</p><div id="rc-banner-body" class="rc-body"><p>Waymo and our third-party partners use cookies and similar technologies to ensure our website functions correctly, to analyze site traffic and performance, and to deliver personalized marketing and content. Essential cookies are automatically active to keep our site running safely and reliably. <b>For non-essential cookies, below you can choose to accept all of them, reject all of them, or customize your preferences.</b> You can change your preferences or withdraw your consent at any time by clicking "Cookie Settings" in the website footer. For more detailed information, please review our <a href="https://waymo.com/privacy/">Privacy Policy</a>.</p></div><div class="rc-actions"><button type="button" data-consent-action="accept" class="rc-btn rc-btn--primary">Accept All</button><button type="button" data-consent-action="reject" class="rc-btn rc-btn--primary">Reject All</button><button type="button" data-consent-action="customize" class="rc-btn rc-btn--link">Manage Preferences</button></div></div><div data-consent-prefs="true" hidden class="rc-prefs"><div role="dialog" aria-modal="true" aria-label="Manage Preferences" class="rc-prefs-dialog"><p class="rc-prefs-title">Manage Preferences</p><div class="rc-cat"><div class="rc-cat-text"><p class="rc-cat-name">Strictly Necessary Cookies</p><p class="rc-cat-desc">These cookies are essential for the website to function properly, enabling core features like network security, load balancing, and remembering your privacy preferences. They cannot be switched off in our systems.</p></div><div><label class="rc-switch"><input type="checkbox" data-category="essential" checked disabled aria-label="Strictly Necessary Cookies"/></label></div></div><div class="rc-cat"><div class="rc-cat-text"><p class="rc-cat-name">Analytics Cookies</p><p class="rc-cat-desc">These cookies allow us and our analytics partners to count visits and traffic sources so we can measure and improve the performance of waymo.com. They help us understand which pages are most and least popular and see how visitors move around the site.</p></div><div><label class="rc-switch"><input type="checkbox" data-category="analytics" checked aria-label="Analytics Cookies"/></label></div></div><div class="rc-cat"><div class="rc-cat-text"><p class="rc-cat-name">Marketing &amp; Advertising Cookies</p><p class="rc-cat-desc">These cookies may be set through our site by us and our advertising partners. They may be used by us and those companies to build a profile of your interests and show you relevant advertisements on other websites and platforms.</p></div><div><label class="rc-switch"><input type="checkbox" data-category="advertising" checked aria-label="Marketing &amp; Advertising Cookies"/></label></div></div><div class="rc-cat"><div class="rc-cat-text"><p class="rc-cat-name">Functional &amp; Personalization Cookies</p><p class="rc-cat-desc">These cookies enable the website to provide enhanced functionality and personalization, such as remembering your language preferences or regional settings. If you do not allow these cookies, some or all of these services may not function properly.</p></div><div><label class="rc-switch"><input type="checkbox" data-category="functional" checked aria-label="Functional &amp; Personalization Cookies"/></label></div></div><div class="rc-prefs-note"><p>If you choose to "Reject All", we will only use strictly necessary cookies.</p></div><div class="rc-prefs-actions"><button type="button" data-consent-action="accept" class="rc-btn rc-btn--primary">Accept All</button><button type="button" data-consent-action="reject" class="rc-btn rc-btn--primary">Reject All</button><button type="button" data-consent-action="save" class="rc-btn rc-btn--link">Save Preferences</button></div></div></div><script type="application/json" data-consent-config="true" nonce="8P+ok3aDkYaoYzRuwVC7Fg==">{"enabled":true,"flag":"EnableCookieConsent","showCustomizeButton":true,"simulate":false,"policyVersion":"1","cookieName":"waymo-consent","cookieTtlDays":390,"jurisdiction":{"country":"US","region":"FL","mode":"silent","tagLoading":"on-consent","defaults":{"essential":true,"analytics":true,"advertising":true,"functional":true},"footerControl":"cookie-settings"},"recordUrl":"/api/consent.record","copy":{"bannerTitle":"We value your privacy","bannerBody":{"time":1700000000000,"version":"2.28.2","blocks":[{"type":"paragraph","data":{"text":"Waymo and our third-party partners use cookies and similar technologies to ensure our website functions correctly, to analyze site traffic and performance, and to deliver personalized marketing and content. Essential cookies are automatically active to keep our site running safely and reliably. <b>For non-essential cookies, below you can choose to accept all of them, reject all of them, or customize your preferences.</b> You can change your preferences or withdraw your consent at any time by clicking \"Cookie Settings\" in the website footer. For more detailed information, please review our <a href=\"https://waymo.com/privacy/\">Privacy Policy</a>."}}]},"prefsNote":{"time":1700000000000,"blocks":[{"type":"paragraph","data":{"text":"If you choose to \"Reject All\", we will only use strictly necessary cookies."}}],"version":"2.28.2"},"acceptAllLabel":"Accept All","rejectAllLabel":"Reject All","customizeLabel":"Manage Preferences","savePreferencesLabel":"Save Preferences","preferencesTitle":"Manage Preferences"},"categories":[{"id":"essential","label":"Strictly Necessary Cookies","description":"These cookies are essential for the website to function properly, enabling core features like network security, load balancing, and remembering your privacy preferences. They cannot be switched off in our systems.","required":true,"defaultOn":true},{"id":"analytics","label":"Analytics Cookies","description":"These cookies allow us and our analytics partners to count visits and traffic sources so we can measure and improve the performance of waymo.com. They help us understand which pages are most and least popular and see how visitors move around the site.","required":false,"defaultOn":true},{"id":"advertising","label":"Marketing & Advertising Cookies","description":"These cookies may be set through our site by us and our advertising partners. They may be used by us and those companies to build a profile of your interests and show you relevant advertisements on other websites and platforms.","required":false,"defaultOn":true},{"id":"functional","label":"Functional & Personalization Cookies","description":"These cookies enable the website to provide enhanced functionality and personalization, such as remembering your language preferences or regional settings. If you do not allow these cookies, some or all of these services may not function properly.","required":false,"defaultOn":true}]}</script><script nonce="8P+ok3aDkYaoYzRuwVC7Fg==" data-consent-count="3">/**
+ * `<root-consent>` custom element — the client runtime for the cookie-consent
+ * pod.
+ *
+ * It is server-rendered with its config in a `<script type="application/json">`
+ * child. On connect it:
+ *   1. Reads any stored choice (cookie) + Global Privacy Control.
+ *   2. Updates Google Consent Mode v2 (`gtag('consent','update',…)`).
+ *   3. Loads gated tags (via a `root-consent-grant` event) when allowed.
+ *   4. Shows the banner / preference center when a choice is needed, wires the
+ *      buttons, persists the choice, and posts an audit receipt.
+ *
+ * Exposes `window.rootConsent` with `get()`, `grant()`, `deny()`,
+ * `update(categories)`, and `openSettings()`.
+ *
+ * This file is intentionally dependency-free vanilla JS so it can be injected
+ * inline (CSP nonce) and run before/independent of the main bundle.
+ */
+(function () {
+  if (window.__rootConsentInit) {
+    return;
+  }
+  window.__rootConsentInit = true;
+
+  var NON_ESSENTIAL = ['analytics', 'advertising', 'functional'];
+
+  function readConfig(el) {
+    var script = el.querySelector('script[data-consent-config]');
+    if (!script) {
+      return null;
+    }
+    try {
+      return JSON.parse(script.textContent || '{}');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function hasGpc() {
+    return navigator.globalPrivacyControl === true;
+  }
+
+  function getCookie(name) {
+    var match = document.cookie.match(
+      new RegExp(
+        '(?:^|; )' + name.replace(/[.$?*|{}()[\]\\/+^]/g, '\\$&') + '=([^;]*)'
+      )
+    );
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  function setCookie(name, value, days) {
+    var expires = new Date(Date.now() + days * 864e5).toUTCString();
+    var secure = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie =
+      name +
+      '=' +
+      encodeURIComponent(value) +
+      '; Path=/; Max-Age=' +
+      (days * 864e5) / 1000 +
+      '; Expires=' +
+      expires +
+      '; SameSite=Lax' +
+      secure;
+  }
+
+  function deleteCookie(name) {
+    var secure = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie =
+      name +
+      '=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT' +
+      '; SameSite=Lax' +
+      secure;
+  }
+
+  /**
+   * Testing affordance: `?resetconsent` (or `?resetconsent=1`) clears the
+   * stored choice so the next render behaves like a first-time visit. Useful
+   * with `?gl=<country>` for exercising a jurisdiction's flow repeatedly
+   * without hunting for the cookie in devtools.
+   *
+   * The param is then stripped from the URL via history.replaceState so a
+   * reload/share doesn't silently keep wiping the visitor's real choice.
+   * Safe to ship: it only ever DELETES local consent state (the privacy-safe
+   * direction) and can't grant consent or read anything.
+   */
+  function maybeResetConsent(cfg) {
+    var params;
+    try {
+      params = new URL(location.href).searchParams;
+    } catch (e) {
+      return false;
+    }
+    if (!params.has('resetconsent')) {
+      return false;
+    }
+    var value = params.get('resetconsent');
+    // `?resetconsent=0` / `=false` opts out, everything else resets.
+    if (value === '0' || value === 'false') {
+      return false;
+    }
+    deleteCookie(cfg.cookieName);
+    try {
+      localStorage.removeItem(cfg.cookieName);
+    } catch (e) {
+      // localStorage may be unavailable; the cookie is the source of truth.
+    }
+    try {
+      var url = new URL(location.href);
+      url.searchParams.delete('resetconsent');
+      history.replaceState(null, '', url.toString());
+    } catch (e) {
+      // Non-fatal: the reset already happened.
+    }
+    return true;
+  }
+
+  function readStored(cfg) {
+    var raw = getCookie(cfg.cookieName);
+    if (!raw) {
+      return null;
+    }
+    try {
+      var data = JSON.parse(raw);
+      // Re-prompt on a policy-version bump (material change).
+      if (data && data.version === cfg.policyVersion) {
+        return data;
+      }
+    } catch (e) {
+      // fall through
+    }
+    return null;
+  }
+
+  function defaultCategories(cfg) {
+    var state = {essential: true};
+    cfg.categories.forEach(function (c) {
+      if (c.id !== 'essential') {
+        state[c.id] = !!c.defaultOn;
+      }
+    });
+    return state;
+  }
+
+  function consentModeMap(categories) {
+    return {
+      ad_storage: categories.advertising ? 'granted' : 'denied',
+      ad_user_data: categories.advertising ? 'granted' : 'denied',
+      ad_personalization: categories.advertising ? 'granted' : 'denied',
+      analytics_storage: categories.analytics ? 'granted' : 'denied',
+      functionality_storage: categories.functional ? 'granted' : 'denied',
+      personalization_storage: categories.functional ? 'granted' : 'denied',
+      security_storage: 'granted',
+    };
+  }
+
+  function gtagUpdate(categories) {
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
+    gtag('consent', 'update', consentModeMap(categories));
+  }
+
+  function dispatchState(categories, mechanism) {
+    // Signal the rest of the app. The tag loader listens for this and the
+    // existing `tracking-loaded` event so analytics.js can boot.
+    var granted = NON_ESSENTIAL.some(function (k) {
+      return categories[k];
+    });
+    window.rootConsentState = {categories: categories, mechanism: mechanism};
+    window.dispatchEvent(
+      new CustomEvent('root-consent-change', {
+        detail: {categories: categories, mechanism: mechanism},
+      })
+    );
+    if (granted) {
+      window.rootConsentGranted = true;
+      window.dispatchEvent(
+        new CustomEvent('root-consent-grant', {
+          detail: {categories: categories},
+        })
+      );
+    }
+  }
+
+  function randomId() {
+    if (window.crypto && window.crypto.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+    return 'c_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  function CookieConsent(el, cfg) {
+    this.el = el;
+    this.cfg = cfg;
+    this.banner = el.querySelector('[data-consent-banner]');
+    this.prefs = el.querySelector('[data-consent-prefs]');
+    this.consentId = null;
+    this.categories = null;
+  }
+
+  CookieConsent.prototype.persist = function (categories, mechanism) {
+    this.categories = categories;
+    this.consentId = this.consentId || randomId();
+    var payload = {
+      id: this.consentId,
+      version: this.cfg.policyVersion,
+      jurisdiction: this.cfg.jurisdiction.mode,
+      categories: categories,
+      mechanism: mechanism,
+      gpc: hasGpc(),
+      ts: Date.now(),
+    };
+    // Simulation mode (internal CMS preview): don't touch the real consent
+    // cookie/localStorage and don't post an audit receipt — just reflect the
+    // choice locally so the tester can see the resulting behavior + Consent
+    // Mode signals, then emit a `root-consent-sim` event the simulator UI
+    // listens to for its live readout.
+    if (this.cfg.simulate) {
+      gtagUpdate(categories);
+      dispatchState(categories, mechanism);
+      try {
+        window.dispatchEvent(
+          new CustomEvent('root-consent-sim', {
+            detail: {payload: payload, mechanism: mechanism},
+          })
+        );
+      } catch (e) {
+        // ignore
+      }
+      return;
+    }
+    setCookie(
+      this.cfg.cookieName,
+      JSON.stringify(payload),
+      this.cfg.cookieTtlDays
+    );
+    try {
+      localStorage.setItem(this.cfg.cookieName, JSON.stringify(payload));
+    } catch (e) {
+      // localStorage may be unavailable; cookie is the source of truth.
+    }
+    gtagUpdate(categories);
+    dispatchState(categories, mechanism);
+    this.postReceipt(payload, mechanism);
+  };
+
+  CookieConsent.prototype.postReceipt = function (payload, mechanism) {
+    try {
+      var body = JSON.stringify({
+        consentId: payload.id,
+        policyVersion: this.cfg.policyVersion,
+        jurisdiction:
+          this.cfg.jurisdiction.mode +
+          (this.cfg.jurisdiction.country
+            ? ':' + this.cfg.jurisdiction.country
+            : ''),
+        categories: payload.categories,
+        mechanism: mechanism,
+        gpc: payload.gpc,
+      });
+      // Non-blocking; failures are non-fatal (choice already enforced locally).
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(
+          this.cfg.recordUrl,
+          new Blob([body], {type: 'application/json'})
+        );
+      } else {
+        fetch(this.cfg.recordUrl, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: body,
+          keepalive: true,
+        }).catch(function () {});
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  CookieConsent.prototype.hideBanner = function () {
+    if (this.banner) {
+      this.banner.hidden = true;
+    }
+  };
+
+  CookieConsent.prototype.showBanner = function () {
+    if (this.banner) {
+      this.banner.hidden = false;
+    }
+  };
+
+  CookieConsent.prototype.openSettings = function () {
+    if (!this.prefs) {
+      return;
+    }
+    this.syncToggles(
+      this.categories || readStored(this.cfg)
+        ? this.categories || readStored(this.cfg).categories
+        : defaultCategories(this.cfg)
+    );
+    // The preference center is a modal that supersedes the banner: keep the
+    // banner out of the backdrop so it can't show through behind the dialog
+    // (and so a returning visitor opening settings from the footer doesn't
+    // suddenly get re-prompted). `restoreBanner()` puts it back if the visitor
+    // dismisses the modal without making a choice.
+    this.hideBanner();
+    this.prefs.hidden = false;
+    // Move focus into the dialog. Skip disabled controls — the first control is
+    // the always-on "strictly necessary" checkbox, which is disabled, and
+    // calling focus() on it silently leaves focus on <body> (so Escape and
+    // other dialog keys never reach us).
+    var focusable = this.prefs.querySelectorAll(
+      'input,button,select,a[href],[tabindex]'
+    );
+    for (var i = 0; i < focusable.length; i++) {
+      if (!focusable[i].disabled && focusable[i].focus) {
+        focusable[i].focus();
+        break;
+      }
+    }
+  };
+
+  CookieConsent.prototype.closeSettings = function () {
+    if (this.prefs) {
+      this.prefs.hidden = true;
+    }
+  };
+
+  /**
+   * Called after the preference center is dismissed WITHOUT a choice being
+   * saved. Re-shows the banner only when the visitor still owes us one — a
+   * stored choice (or a jurisdiction that never prompts) leaves it hidden.
+   */
+  CookieConsent.prototype.restoreBanner = function () {
+    if (readStored(this.cfg) || this.cfg.jurisdiction.mode === 'silent') {
+      this.hideBanner();
+    } else {
+      this.showBanner();
+    }
+  };
+
+  CookieConsent.prototype.syncToggles = function (categories) {
+    if (!this.prefs) {
+      return;
+    }
+    NON_ESSENTIAL.forEach(function (id) {
+      var input = this.prefs.querySelector('input[data-category="' + id + '"]');
+      if (input) {
+        input.checked = !!categories[id];
+      }
+    }, this);
+  };
+
+  CookieConsent.prototype.readToggles = function () {
+    var state = {essential: true};
+    NON_ESSENTIAL.forEach(function (id) {
+      var input = this.prefs
+        ? this.prefs.querySelector('input[data-category="' + id + '"]')
+        : null;
+      state[id] = input ? input.checked : false;
+    }, this);
+    return state;
+  };
+
+  CookieConsent.prototype.acceptAll = function () {
+    // Grants only the categories this site actually declares, so a site that
+    // uses analytics alone never records a grant for advertising cookies it
+    // doesn't set.
+    var state = {essential: true};
+    var configured = {};
+    this.cfg.categories.forEach(function (c) {
+      configured[c.id] = true;
+    });
+    NON_ESSENTIAL.forEach(function (id) {
+      state[id] = configured[id] === true;
+    });
+    this.persist(state, 'banner');
+    this.hideBanner();
+    this.closeSettings();
+  };
+
+  CookieConsent.prototype.rejectAll = function () {
+    var state = {
+      essential: true,
+      analytics: false,
+      advertising: false,
+      functional: false,
+    };
+    this.persist(state, 'banner');
+    this.hideBanner();
+    this.closeSettings();
+  };
+
+  CookieConsent.prototype.savePrefs = function () {
+    var state = this.readToggles();
+    this.persist(state, 'settings');
+    this.hideBanner();
+    this.closeSettings();
+  };
+
+  CookieConsent.prototype.wire = function () {
+    var self = this;
+    this.el.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-consent-action]');
+      if (!t) {
+        return;
+      }
+      var action = t.getAttribute('data-consent-action');
+      e.preventDefault();
+      if (action === 'accept') {
+        self.acceptAll();
+      } else if (action === 'reject') {
+        self.rejectAll();
+      } else if (action === 'customize') {
+        self.openSettings();
+      } else if (action === 'save') {
+        self.savePrefs();
+      } else if (action === 'close') {
+        self.closeSettings();
+        // Dismissed without choosing: re-prompt only if a choice is still owed.
+        self.restoreBanner();
+      }
+    });
+    // A persistent footer/anywhere trigger can open settings.
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-open-consent-settings]');
+      if (t) {
+        e.preventDefault();
+        self.openSettings();
+      }
+    });
+    // Escape closes the preference center. Bound on the document (not the
+    // element) so it works regardless of where focus currently sits.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && self.prefs && !self.prefs.hidden) {
+        self.closeSettings();
+        self.restoreBanner();
+      }
+    });
+  };
+
+  CookieConsent.prototype.init = function () {
+    var gpc = hasGpc();
+
+    // `?resetconsent` clears any stored choice first, so the rest of init()
+    // runs the genuine first-time-visitor path for this jurisdiction.
+    maybeResetConsent(this.cfg);
+
+    // Simulation mode (internal CMS preview): ignore any stored choice and
+    // always present the banner exactly as a first-time visitor in the selected
+    // jurisdiction would see it. Apply the jurisdiction defaults / GPC behavior
+    // for the Consent Mode readout, but never persist.
+    if (this.cfg.simulate) {
+      var simDefaults = defaultCategories(this.cfg);
+      if (gpc && this.cfg.jurisdiction.mode === 'opt-out') {
+        simDefaults.advertising = false;
+      }
+      gtagUpdate(simDefaults);
+      if (this.cfg.jurisdiction.mode !== 'opt-in') {
+        dispatchState(simDefaults, 'banner');
+      }
+      // `silent` suppresses the banner by default; reflect that in the preview.
+      if (this.cfg.jurisdiction.mode === 'silent') {
+        this.hideBanner();
+      } else {
+        this.showBanner();
+      }
+      this.wire();
+      this.exposeApi();
+      return;
+    }
+
+    var stored = readStored(this.cfg);
+
+    if (stored && stored.categories) {
+      // Honor the stored choice.
+      this.consentId = stored.id || null;
+      this.categories = stored.categories;
+      gtagUpdate(stored.categories);
+      dispatchState(stored.categories, 'reconsent');
+      this.hideBanner();
+    } else if (gpc && this.cfg.jurisdiction.mode === 'opt-out') {
+      // GPC in an opt-out jurisdiction = automatic opt-out of advertising.
+      var gpcState = defaultCategories(this.cfg);
+      gpcState.advertising = false;
+      this.persist(gpcState, 'gpc');
+      this.hideBanner();
+    } else if (this.cfg.jurisdiction.mode === 'silent') {
+      // Silent mode: apply this jurisdiction's defaults but DON'T prompt — no
+      // banner is shown. The preference center is still reachable (e.g. via the
+      // footer link / window.rootConsent.openSettings()).
+      var silentDefaults = defaultCategories(this.cfg);
+      gtagUpdate(silentDefaults);
+      dispatchState(silentDefaults, 'banner');
+      this.hideBanner();
+    } else {
+      // No prior choice — set defaults for this jurisdiction and prompt.
+      var defaults = defaultCategories(this.cfg);
+      gtagUpdate(defaults);
+      // In opt-out/notice-only, defaults already loaded; still show the notice.
+      if (this.cfg.jurisdiction.mode !== 'opt-in') {
+        dispatchState(defaults, 'banner');
+      }
+      this.showBanner();
+    }
+    this.wire();
+    this.exposeApi();
+  };
+
+  CookieConsent.prototype.exposeApi = function () {
+    var self = this;
+    window.rootConsent = {
+      get: function () {
+        var stored = readStored(self.cfg);
+        return stored
+          ? stored.categories
+          : self.categories || defaultCategories(self.cfg);
+      },
+      grant: function () {
+        self.acceptAll();
+      },
+      deny: function () {
+        self.rejectAll();
+      },
+      update: function (categories) {
+        var state = {essential: true};
+        NON_ESSENTIAL.forEach(function (id) {
+          state[id] = !!(categories && categories[id]);
+        });
+        self.persist(state, 'settings');
+        self.hideBanner();
+        self.closeSettings();
+      },
+      openSettings: function () {
+        self.openSettings();
+      },
+      config: self.cfg,
+    };
+  };
+
+  function define() {
+    if (window.customElements && !window.customElements.get('root-consent')) {
+      window.customElements.define(
+        'root-consent',
+        class extends HTMLElement {
+          connectedCallback() {
+            if (this.__inited) {
+              return;
+            }
+            this.__inited = true;
+            var cfg = readConfig(this);
+            if (!cfg || !cfg.enabled) {
+              return;
+            }
+            new CookieConsent(this, cfg).init();
+          }
+        }
+      );
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', define);
+  } else {
+    define();
+  }
+})();
+</script></root-consent>
+</body></html>

@@ -76,23 +76,30 @@ def main():
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        COL = {"persistence": "#e08a2e",
+               "constant_velocity_oracle_flow": "#2e9e5b",
+               "constant_velocity_estimated_flow": "#c0392b"}
         fig, ax = plt.subplots(1, 3, figsize=(15, 4.2))
         step = [r["step"] for r in recs]
         ax[0].plot(step, [np.mean(r["by_horizon"]["soft_iou"]) for r in recs],
-                   label="model", lw=2)
+                   label="model", lw=2.2, color="#1f6fd0")
         for name in recs[-1]["baselines"]:
             ax[0].axhline(np.mean(recs[-1]["baselines"][name]["soft_iou"]),
-                          ls="--", lw=1, label=name.replace("_", " "))
+                          ls="--", lw=1.2, color=COL.get(name, "grey"),
+                          label=name.replace("_", " "))
         ax[0].set_xlabel("step"); ax[0].set_ylabel("mean soft IoU")
         ax[0].set_title("forecast quality vs baselines"); ax[0].legend(fontsize=7)
-        ax[1].plot(step, [r["headline"]["bias_mean"] for r in recs], lw=2)
+        ax[1].plot(step, [r["headline"]["bias_mean"] for r in recs], lw=2.2,
+                   color="#1f6fd0")
         ax[1].axhline(1.0, ls="--", c="k", lw=1)
         ax[1].set_xlabel("step"); ax[1].set_title("bias (1.0 = unbiased)")
         h = recs[-1]["by_horizon"]["soft_iou"]
-        ax[2].plot([(i+1)*dt for i in range(len(h))], h, "o-", label="model")
+        ax[2].plot([(i+1)*dt for i in range(len(h))], h, "o-", lw=2.2,
+                   color="#1f6fd0", label="model")
         for name, bm in recs[-1]["baselines"].items():
             ax[2].plot([(i+1)*dt for i in range(len(bm["soft_iou"]))], bm["soft_iou"],
-                       "--", lw=1, label=name.replace("_", " "))
+                       "--", lw=1.4, color=COL.get(name, "grey"),
+                       label=name.replace("_", " "))
         ax[2].set_xlabel("forecast horizon (s)"); ax[2].set_title("decay with horizon")
         ax[2].legend(fontsize=7)
         for a in ax:

@@ -92,6 +92,7 @@ html = (html.replace("__STATIC_MAP__", uri("static_map.png"))
             .replace("__MOTION__", uri("motion_check_2hz.png"))
             .replace("__COLLISION__", uri("collision_closeup.png"))
             .replace("__FORECAST__", uri("forecast_epoch0.png"))
+            .replace("__PROGRESS__", uri("pilot_progress.png"))
             .replace("__RESULTS_HEADING__", heading)
             .replace("__RESULTS_BODY__", body))
 st = {}

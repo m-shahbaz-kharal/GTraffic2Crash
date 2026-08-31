@@ -18,6 +18,7 @@ dependencies = [
     "tqdm>=4.67",
     "pandas>=2.2",
     "torchmetrics>=1.6",
+    "opencv-python-headless>=5.0.0.93",
 ]
 
 [tool.uv]

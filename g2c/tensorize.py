@@ -37,7 +37,10 @@ CLASS_TO_GROUP = np.array([GROUPS[c] for c in CLASS_NAMES], dtype=np.int64)
 FLOW_SCALE = 15.0
 
 STOPPED_SPEED = 0.5      # m/s below which a vehicle counts as stopped
-SPEEDING_SPEED = 16.0    # m/s (~58 km/h); Town05 limits are 30-60 km/h
+# Purely a statistic, not a label.  Town05's outer ring is signed for 90 km/h,
+# so anything lower than this flags ordinary driving as speeding -- which it did:
+# a nominal episode with zero bad actors came out 100 % "speeding".
+SPEEDING_SPEED = 22.0    # m/s, about 80 km/h
 
 
 def load_episode(path):
@@ -71,11 +74,12 @@ def tensorise_episode(src, dst, grid: Grid, stride: int):
 
     coll_frame = z["collision_frame"]
     coll_a, coll_b = z["collision_a"], z["collision_b"]
+    coll_imp = z["collision_impulse"]
 
     cov_off, cov_idx, cov_val, cov_chan = [0], [], [], []
     flo_off, flo_idx, flo_vec = [0], [], []
     counts, n_veh, n_moving, max_speed, n_speeding = [], [], [], [], []
-    has_coll, coll_xy, times = [], [], []
+    has_coll, coll_xy, coll_impulse, coll_speed, times = [], [], [], [], []
     behaviour_present = []
 
     for out_f, f in enumerate(keep):
@@ -119,16 +123,23 @@ def tensorise_episode(src, dst, grid: Grid, stride: int):
         window = (coll_frame >= f) & (coll_frame < f + stride)
         has_coll.append(bool(window.any()))
         if window.any():
-            k = np.argmax(window)
+            # Keep the hardest contact in the window; severity is what separates
+            # a crash from a bumper nudge in a stopped queue, and both occur.
+            k = int(np.argmax(np.where(window, coll_imp, -np.inf)))
             ai, bi = coll_a[k], coll_b[k]
-            pos = []
+            pos, sp = [], 0.0
             for actor in (ai, bi):
                 hit = np.nonzero(v["index"] == actor)[0]
                 if len(hit):
                     pos.append(v["xy"][hit[0]])
+                    sp = max(sp, float(speed[hit[0]]))
             coll_xy.append(np.mean(pos, axis=0) if pos else [np.nan, np.nan])
+            coll_impulse.append(float(coll_imp[k]))
+            coll_speed.append(sp)
         else:
             coll_xy.append([np.nan, np.nan])
+            coll_impulse.append(0.0)
+            coll_speed.append(0.0)
 
     out_meta = dict(meta)
     out_meta.update({
@@ -161,6 +172,8 @@ def tensorise_episode(src, dst, grid: Grid, stride: int):
         behaviour_present=np.asarray(behaviour_present, np.int32),
         has_collision=np.asarray(has_coll, np.bool_),
         collision_xy=np.asarray(coll_xy, np.float32),
+        collision_impulse=np.asarray(coll_impulse, np.float32),
+        collision_speed=np.asarray(coll_speed, np.float32),
     )
     return out_meta
 

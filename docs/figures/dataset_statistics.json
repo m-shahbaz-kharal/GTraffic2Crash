@@ -1,0 +1,20 @@
+{
+  "episodes": 2,
+  "frames": 480,
+  "frame_dt_s": 0.5,
+  "windows": 442,
+  "occupied_cell_fraction_mean": 0.01880425347222222,
+  "max_cell_coverage": 0.9843137860298157,
+  "vehicles_per_frame_mean": 160.0,
+  "max_speed_m_s": 25.2978515625,
+  "scenario_counts": {
+    "nominal": 211,
+    "collision": 163,
+    "incident_traffic": 68
+  },
+  "mean_vehicle_area_m2": [
+    10.027647018432617,
+    15.696751594543457,
+    1.4222400188446045
+  ]
+}

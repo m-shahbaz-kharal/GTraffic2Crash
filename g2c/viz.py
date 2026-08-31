@@ -122,7 +122,7 @@ def caption(img, lines, xy=(8, 6), colour=(235, 240, 250)):
         d.text((xy[0] + 1, y + 1), line, font=f, fill=(0, 0, 0))
         d.text((xy[0], y), line, font=f, fill=colour)
         y += 18
-    return np.asarray(im)
+    return np.array(im)
 
 
 def legend(img, entries, xy=(8, None)):
@@ -138,7 +138,7 @@ def legend(img, entries, xy=(8, None)):
         d.text((x + 19, y + 1), label, font=f, fill=(0, 0, 0))
         d.text((x + 18, y), label, font=f, fill=(230, 235, 245))
         y += 22
-    return np.asarray(im)
+    return np.array(im)
 
 
 def hstack(images, gap=10, colour=BACKGROUND):

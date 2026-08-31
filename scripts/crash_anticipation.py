@@ -66,9 +66,16 @@ def main():
     sp = os.path.join(os.path.dirname(os.path.dirname(args.checkpoint)), "episode_split.json")
     if os.path.exists(sp):
         val_ids = set(json.load(open(sp))["validation_episodes"])
+        rederived = False
     else:
         _, val_ids = split_episodes(store.meta, args.val_fraction, 0)
-        print("!! no recorded split; these windows may overlap training data")
+        rederived = True
+        print("!" * 72)
+        print("!! This run recorded no episode split, so it is being re-derived from")
+        print("!! the episodes now on disk.  If the run trained on a different set,")
+        print("!! these windows overlap its training data and the numbers below are")
+        print("!! indicative only, not a held-out measurement.")
+        print("!" * 72)
     val = OccupancyWindows(store, cfg.t_in, cfg.t_out, 3, episodes=val_ids)
     idx = [i for i in range(len(val))
            if val.windows[i].has_collision
@@ -138,7 +145,8 @@ def main():
               f"{r_['forecast_at_impact_site']:>18.4f} "
               f"{r_['forecast_at_control_site']:>11.4f} "
               f"{r_['truth_at_impact_site']:>15.4f} {r_['contrast_ratio']:>9.2f}x")
-    json.dump(rows, open(os.path.join(args.out, "crash_anticipation.json"), "w"), indent=2)
+    json.dump({"held_out": not rederived, "rows": rows},
+              open(os.path.join(args.out, "crash_anticipation.json"), "w"), indent=2)
     print(f"\n[crash] wrote {args.out}/crash_anticipation.json")
     print("[crash] contrast above 1 means the forecast concentrates occupancy at "
           "the place the crash happens, before it happens")

@@ -39,6 +39,9 @@ def main():
     ap.add_argument("--val-stride", type=int, default=5)
     ap.add_argument("--max-batches", type=int, default=0)
     ap.add_argument("--videos", type=int, default=3)
+    ap.add_argument("--val-fraction", type=float, default=0.15,
+                    help="must match the value training used, or the split differs "
+                         "and the held-out set is no longer held out")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
@@ -48,8 +51,7 @@ def main():
     cfg = model.cfg
     static = StaticMap(os.path.join(args.data, "meta", "town05_static.npz"))
     store = EpisodeStore(os.path.join(args.data, "tensor"), static.grid)
-    _, val_ids = split_episodes(store.meta, model.hparams.get("val_fraction", 0.15)
-                               if hasattr(model, "hparams") else 0.15, 0)
+    _, val_ids = split_episodes(store.meta, args.val_fraction, 0)
     val = OccupancyWindows(store, cfg.t_in, cfg.t_out, args.val_stride, episodes=val_ids)
     print(f"[eval] {len(val):,} held-out windows from {len(val_ids)} episodes")
     print(f"[eval] scenarios: {dict(Counter(val.scenario(i) for i in range(len(val))))}")

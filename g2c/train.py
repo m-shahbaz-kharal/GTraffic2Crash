@@ -114,6 +114,8 @@ class Forecaster(L.LightningModule):
         self._baseline_acc = {}
         self._scenario_acc = {}
         self._t0 = time.time()
+        self._last_print = time.time()
+        self._last_step = 0
 
     # ------------------------------------------------------------- helpers --
     def _augment(self, batch):
@@ -164,6 +166,27 @@ class Forecaster(L.LightningModule):
                                        self.weights, self.cells_per_frame_step)
         for k, v in terms.items():
             self.log(f"train/{k}", v, on_step=True, on_epoch=False, prog_bar=(k == "total"))
+
+        # An explicit heartbeat.  Lightning's progress bar writes carriage
+        # returns that never reach a redirected log file, so without this a run
+        # is completely opaque until its first validation -- which for the
+        # headline run is over an hour in.
+        if self.trainer.is_global_zero and self.global_step % 100 == 0:
+            now = time.time()
+            dt = now - self._last_print
+            done = self.global_step - self._last_step
+            rate = done / dt if dt > 0 else 0.0
+            total = self.trainer.max_steps if self.trainer.max_steps > 0 else \
+                self.trainer.estimated_stepping_batches
+            eta = (total - self.global_step) / rate / 3600 if rate > 0 else float("nan")
+            print(f"[step {self.global_step:>7,}/{total:,}] "
+                  f"loss {float(terms['total']):.4f}  "
+                  f"occupancy {float(terms['occupancy_cross_entropy']):.4f}  "
+                  f"flow {float(terms.get('flow_error', 0)):.4f}  "
+                  f"trace {float(terms.get('flow_trace', 0)):.4f}  "
+                  f"count {float(terms['vehicle_count_relative_error']):.4f}  "
+                  f"{rate:.2f} steps/s  eta {eta:.1f} h", flush=True)
+            self._last_print, self._last_step = now, self.global_step
         return loss
 
     def on_validation_epoch_start(self):

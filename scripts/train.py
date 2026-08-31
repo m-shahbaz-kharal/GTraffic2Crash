@@ -8,6 +8,7 @@ import sys
 import lightning as L
 import torch
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
+from lightning.pytorch.callbacks.progress import TQDMProgressBar
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from g2c.losses import LossWeights  # noqa: E402
@@ -92,6 +93,10 @@ def main():
 
     callbacks = [
         LearningRateMonitor(logging_interval="step"),
+        # The bar redraws with carriage returns, which produce an unreadable
+        # log file and no useful information; the heartbeat in training_step
+        # replaces it.
+        TQDMProgressBar(refresh_rate=0),
         # Two checkpoints: the best by validation quality, and the latest, so a
         # preempted or timed-out job resumes without losing an epoch.
         # The monitored metric name contains a slash, which is a hazard inside a

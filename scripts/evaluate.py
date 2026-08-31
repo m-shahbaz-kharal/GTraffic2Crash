@@ -51,7 +51,20 @@ def main():
     cfg = model.cfg
     static = StaticMap(os.path.join(args.data, "meta", "town05_static.npz"))
     store = EpisodeStore(os.path.join(args.data, "tensor"), static.grid)
-    _, val_ids = split_episodes(store.meta, args.val_fraction, 0)
+    # Prefer the split the run actually used.  Deriving it again from whatever
+    # episodes happen to be on disk would silently use a different held-out set
+    # if any episodes were added since.
+    sp = os.path.join(os.path.dirname(os.path.dirname(args.checkpoint)),
+                      "episode_split.json")
+    if os.path.exists(sp):
+        rec = json.load(open(sp))
+        val_ids = set(rec["validation_episodes"])
+        print(f"[eval] using the run's recorded split "
+              f"({len(val_ids)} held-out episodes of {rec['n_episodes_on_disk']})")
+    else:
+        _, val_ids = split_episodes(store.meta, args.val_fraction, 0)
+        print(f"[eval] no recorded split; re-deriving from {len(store.meta)} episodes "
+              f"at val_fraction {args.val_fraction}")
     val = OccupancyWindows(store, cfg.t_in, cfg.t_out, args.val_stride, episodes=val_ids)
     print(f"[eval] {len(val):,} held-out windows from {len(val_ids)} episodes")
     print(f"[eval] scenarios: {dict(Counter(val.scenario(i) for i in range(len(val))))}")

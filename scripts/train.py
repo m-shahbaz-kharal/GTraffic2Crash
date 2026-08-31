@@ -127,6 +127,7 @@ def main():
         num_sanity_val_steps=0)
     json.dump({**vars(args), "model": vars(cfg), "parameters": n},
               open(os.path.join(out, "config.json"), "w"), indent=2)
+    json.dump(dm.split, open(os.path.join(out, "episode_split.json"), "w"), indent=2)
     trainer.fit(model, datamodule=dm, ckpt_path=args.resume or None)
 
 

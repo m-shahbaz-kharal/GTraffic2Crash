@@ -69,6 +69,13 @@ class G2CDataModule(L.LightningDataModule):
         from collections import Counter
         print(f"[data] validation scenarios: "
               f"{dict(Counter(self.val_set.scenario(i) for i in range(len(self.val_set))))}")
+        # Record the exact split.  It is derived from the list of episodes present
+        # on disk, so adding episodes later silently changes it -- and an
+        # evaluation run against a different split is not an evaluation.
+        self.split = {"train_episodes": sorted(train_ids),
+                      "validation_episodes": sorted(val_ids),
+                      "n_episodes_on_disk": len(self.store.episodes),
+                      "val_fraction": h.val_fraction, "seed": h.seed}
 
     def train_dataloader(self):
         return DataLoader(self.train_set, batch_size=self.hparams.batch_size, shuffle=True,

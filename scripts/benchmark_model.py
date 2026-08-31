@@ -22,8 +22,10 @@ def bench(size, batch, steps=12, checkpointing=True, rows=144, cols=160, t=10):
     dev = torch.device("cuda")
     cfg = OccupancyForecaster.preset(size, rows=rows, cols=cols, t_in=t, t_out=t,
                                      checkpointing=checkpointing)
+    print(f"  [{size}/{batch}] building...", flush=True)
     net = OccupancyForecaster(cfg).to(dev)
     n, _ = net.parameter_count()
+    print(f"  [{size}/{batch}] {n/1e6:.0f} M params on device", flush=True)
     opt = torch.optim.AdamW(net.parameters(), lr=1e-4)
     past = torch.rand(batch, t, 3, rows, cols, device=dev) * 0.05
     static = torch.rand(batch, cfg.n_static, rows, cols, device=dev)
@@ -36,11 +38,20 @@ def bench(size, batch, steps=12, checkpointing=True, rows=144, cols=160, t=10):
     torch.cuda.reset_peak_memory_stats()
     times = []
     for i in range(steps):
+        if i < 3:
+            print(f"  [{size}/{batch}] step {i}", flush=True)
         torch.cuda.synchronize(); t0 = time.time()
         with torch.autocast("cuda", dtype=torch.bfloat16):
             pred = net(past, static)
+            if i == 0:
+                torch.cuda.synchronize(); print("    forward ok", flush=True)
             loss, _ = forecasting_loss(pred, b, LossWeights(), 1.0)
-        loss.backward(); opt.step(); opt.zero_grad(set_to_none=True)
+            if i == 0:
+                torch.cuda.synchronize(); print("    loss ok", flush=True)
+        loss.backward()
+        if i == 0:
+            torch.cuda.synchronize(); print("    backward ok", flush=True)
+        opt.step(); opt.zero_grad(set_to_none=True)
         torch.cuda.synchronize()
         if i >= 4:
             times.append(time.time() - t0)

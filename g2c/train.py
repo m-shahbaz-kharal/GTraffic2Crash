@@ -186,15 +186,16 @@ class Forecaster(L.LightningModule):
                 self._scenario_acc.setdefault(name, Accumulator(self.cfg.t_out)).update(
                     prob[m], batch["future_occupancy"][m], **common)
 
-        # Baselines on the same batches, every epoch.
-        if idx < 40:
-            base = all_baselines(batch, self.cells_per_frame_step, self.cfg.t_out)
-            for name, p in base.items():
-                self._baseline_acc.setdefault(name, Accumulator(self.cfg.t_out)).update(
-                    p, batch["future_occupancy"], **common)
-            if idx < 40 and self._val_acc.n and idx == 0:
-                self._video_batch = ({k: v[:1].detach().cpu() for k, v in batch.items()},
-                                     prob[:1].detach().cpu())
+        # Baselines on *every* validation batch, so the comparison is like for
+        # like.  Scoring them on a subset while scoring the model on everything
+        # would make the gap depend on which batches happened to come first.
+        for name, p in all_baselines(batch, self.cells_per_frame_step,
+                                     self.cfg.t_out).items():
+            self._baseline_acc.setdefault(name, Accumulator(self.cfg.t_out)).update(
+                p, batch["future_occupancy"], **common)
+        if idx == 0:
+            self._video_batch = ({k: v[:1].detach().cpu() for k, v in batch.items()},
+                                 prob[:1].detach().cpu())
         return loss
 
     def on_validation_epoch_end(self):

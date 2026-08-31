@@ -35,7 +35,9 @@ def main():
     p.add_argument("--val-stride", type=int, default=5)
     p.add_argument("--max-episodes", type=int, default=0)
     p.add_argument("--limit-train-batches", type=float, default=1.0)
-    p.add_argument("--limit-val-batches", type=float, default=1.0)
+    p.add_argument("--limit-val-batches", type=float, default=200,
+               help="validation batches per epoch; ~1600 windows is plenty for "
+                    "stable metrics and keeps every epoch's validation quick")
     p.add_argument("--val-check-interval", type=float, default=1.0)
     p.add_argument("--devices", type=int, default=1)
     p.add_argument("--precision", default="bf16-mixed")

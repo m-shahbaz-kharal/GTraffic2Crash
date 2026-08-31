@@ -129,8 +129,25 @@ the model learns nothing. 1.25 cells per frame sits where motion is unmistakable
 but continuous. 5 s is also the horizon that matters: the interval between "this
 looks wrong" and impact is typically 1–3 s.
 
-Because the raw layer is stored at 20 Hz, dt is a preprocessing constant, not a
+Because the raw layer is stored at 10 Hz, dt is a preprocessing constant, not a
 commitment.
+
+Measured on generated data, this is what one 0.5 s step actually looks like:
+
+| | |
+|---|---|
+| vehicles essentially stationary (< 0.1 cell per step) | 55 % |
+| vehicles moving more than half a cell per step | 37 % |
+| fleet moving at any instant | 45 %, oscillating 32-57 % on the light cycle |
+| median displacement of a *moving* vehicle over the 5 s horizon | 9.0 cells (36 m) |
+
+Half the town is stopped at any moment, which is what urban traffic with signals
+looks like and is why persistence is a strong baseline. It is also what makes
+the task interesting rather than degenerate: **the model's real job is to tell
+the vehicle that will sit still for five seconds from the one that will travel
+thirty-six metres**, and that distinction cannot be made from the occupancy of a
+single frame. It requires reading the queue, the signal phase implied by the
+traffic's own behaviour, and the road ahead.
 
 ---
 
@@ -407,6 +424,30 @@ before the model is:
    same idea and the fairer head-to-head.
 
 **The model's value is the gap between it and baseline 2.**
+
+Measured on a held-out episode before any training (45 windows, so indicative
+rather than precise):
+
+| forecast | mean soft-IoU | at +0.5 s | at +5.0 s | BIAS |
+|---|---|---|---|---|
+| persistence | 0.368 | 0.547 | 0.312 | 1.000 |
+| constant velocity, estimated flow | 0.328 | 0.604 | 0.200 | 1.000 |
+| constant velocity, oracle flow | **0.429** | **0.819** | 0.307 | 0.983 |
+| untrained model | 0.366 | - | - | 1.004 |
+
+Three things follow. The bar is 0.429. Constant velocity with *estimated* flow
+is worse than doing nothing, because dense optical flow on a near-binary sparse
+grid is unreliable -- so the deployable extrapolation baseline is weak and the
+oracle version is the honest one to beat. And oracle constant velocity, despite
+being far better at half a second, is *worse than persistence* at five seconds
+(0.307 against 0.312): repeated warping spreads mass, and vehicles do not travel
+in straight lines for five seconds. That crossover is the shape of the problem --
+short horizons reward motion modelling, long horizons reward knowing where the
+roads go and where the traffic will stop.
+
+The untrained model scoring 0.366 against persistence's 0.368 confirms the
+residual parameterisation does what it is supposed to: training starts from
+persistence and has to earn every point above it.
 
 Metrics, per future timestep (not averaged into one number, which hides
 degradation):

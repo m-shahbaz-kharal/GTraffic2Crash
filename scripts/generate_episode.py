@@ -35,6 +35,22 @@ BEHAVIOURS = ["normal", "speeding", "red_light_runner", "erratic", "tailgater"]
 BEHAVIOUR_ID = {b: i for i, b in enumerate(BEHAVIOURS)}
 
 
+def blueprint_attributes(bp) -> dict:
+    """The two attributes categorisation needs, read defensively.
+
+    Blueprint attributes are typed and `as_str()` raises on some of them
+    (`has_lights` is a bool), so this reads only what is wanted.
+    """
+    out = {}
+    for key in ("base_type", "number_of_wheels"):
+        if bp.has_attribute(key):
+            try:
+                out[key] = bp.get_attribute(key).as_str()
+            except RuntimeError:
+                pass
+    return out
+
+
 def categorise(bp_id: str, attributes: dict) -> str:
     """Map a CARLA vehicle blueprint to one of the six dataset classes.
 
@@ -233,8 +249,8 @@ def main():
 
     veh = {
         "actor_id": [v.id for v in vehicles],
-        "class": [CLASS_NAMES.index(categorise(
-            bp.id, {a.id: a.as_str() for a in bp})) for bp in bps],
+        "class": [CLASS_NAMES.index(categorise(bp.id, blueprint_attributes(bp)))
+                  for bp in bps],
         "extent": [[2 * v.bounding_box.extent.x, 2 * v.bounding_box.extent.y] for v in vehicles],
         "is_static": [False] * len(vehicles),
         "behaviour": [BEHAVIOUR_ID[b] for b in behaviour],

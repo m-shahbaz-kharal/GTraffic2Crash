@@ -157,8 +157,13 @@ EXTRA="--warmup-steps 1000 --max-steps 32000 --val-check-interval 0.05 --limit-v
 
 When it finishes:
 
+Do the evaluation **before** merging the backfilled episodes. The split is a
+function of which episodes are on disk; `runs/base_v1/episode_split.json` pins it,
+but keeping `tensor/` unchanged until after evaluation keeps everything simple.
+
 ```bash
 RUN=base_v1 sbatch slurm/evaluate.sbatch          # uses the run's recorded split
+RUN=base_v1 sbatch slurm/crash_analysis.sbatch    # the crash-anticipation numbers
 mv $DATA/tensor_backfill/*.npz $DATA/tensor/      # 47 more episodes, for the next run
 ```
 

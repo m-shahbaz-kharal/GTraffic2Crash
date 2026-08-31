@@ -113,6 +113,39 @@ Weights & Biases runs **offline** on this cluster. After `wandb login`,
 `runs/<run>/reports/validation.jsonl` and a forecast video per epoch, so
 progress is readable without W&B.
 
+## Checking on a run
+
+```bash
+./scripts/status.sh                        # everything in flight, one line each
+.venv/bin/python scripts/report_run.py base_v1 --plot
+```
+
+`report_run.py` prints the gap over every baseline, the decay across the horizon,
+BIAS drift and the per-scenario split, and writes `runs/<run>/reports/progress.png`.
+Training also writes a forecast video per epoch to `runs/<run>/videos/` -- ten
+observed frames, then ten pairs of ground truth beside the prediction.
+
+The headline run needs about 39 hours against a 36-hour job limit, so SLURM will
+requeue it once; the batch script picks up `last.ckpt` automatically and the
+resume path is tested (`slurm/resume_test.sbatch`). If it needs restarting by
+hand:
+
+```bash
+RUN=base_v1 SIZE=base BATCH=8 EPOCHS=6 LR=2e-4 \
+EXTRA="--warmup-steps 1000 --max-steps 32000 --val-check-interval 0.05 --limit-val-batches 150" \
+  sbatch slurm/train.sbatch
+```
+
+When it finishes:
+
+```bash
+RUN=base_v1 sbatch slurm/evaluate.sbatch          # uses the run's recorded split
+mv $DATA/tensor_backfill/*.npz $DATA/tensor/      # 47 more episodes, for the next run
+```
+
+Weights & Biases is offline; `scripts/sync_wandb.sh` uploads every run after
+`wandb login`.
+
 ## Cluster notes
 
 * Request GPUs with untyped `--gres=gpu:1` plus `--constraint=h100`; a typed

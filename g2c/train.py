@@ -33,6 +33,12 @@ from .metrics import Accumulator, table
 from .model import ModelConfig, OccupancyForecaster
 from .tensorize import FLOW_SCALE, GROUP_NAMES, GROUP_RGB
 
+# Lightning stores the model and loss configurations in the checkpoint's
+# hyper-parameters, and torch.load has defaulted to weights_only=True since
+# PyTorch 2.6 -- which refuses to unpickle them.  Without this, both resuming a
+# preempted run and loading a checkpoint for evaluation fail.
+torch.serialization.add_safe_globals([ModelConfig, LossWeights])
+
 
 class G2CDataModule(L.LightningDataModule):
     def __init__(self, data_root, t_in=10, t_out=10, batch_size=8, workers=8,
@@ -77,15 +83,26 @@ class G2CDataModule(L.LightningDataModule):
 
 class Forecaster(L.LightningModule):
     def __init__(self, model_config: ModelConfig, loss_weights: LossWeights,
-                 static_channels, valid_mask, mean_vehicle_area, frame_dt_s,
-                 cell_size_m, learning_rate=3e-4, weight_decay=0.05,
-                 warmup_steps=500, total_steps=100_000, augment=True,
-                 video_every_n_epochs=1, output_dir="runs/dev"):
+                 static_channels=None, valid_mask=None, mean_vehicle_area=None,
+                 frame_dt_s=0.5, cell_size_m=4.0, learning_rate=3e-4,
+                 weight_decay=0.05, warmup_steps=500, total_steps=100_000,
+                 augment=True, video_every_n_epochs=1, output_dir="runs/dev"):
         super().__init__()
         self.save_hyperparameters(ignore=["static_channels", "valid_mask"])
         self.net = OccupancyForecaster(model_config)
         self.cfg = model_config
         self.weights = loss_weights
+        # The map and the validity mask are buffers, so they travel in the
+        # state dict and do not need to be supplied when a checkpoint is
+        # reloaded -- placeholders of the right shape are enough, and are
+        # immediately overwritten by the saved values.
+        if static_channels is None:
+            static_channels = torch.zeros(model_config.n_static,
+                                          model_config.rows, model_config.cols)
+        if valid_mask is None:
+            valid_mask = torch.ones(model_config.rows, model_config.cols)
+        if mean_vehicle_area is None:
+            mean_vehicle_area = torch.ones(model_config.n_groups) * 10.0
         self.register_buffer("static", static_channels)
         self.register_buffer("valid", valid_mask)
         self.register_buffer("mean_vehicle_area", torch.as_tensor(mean_vehicle_area))

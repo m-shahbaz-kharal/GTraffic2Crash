@@ -327,14 +327,21 @@ class OccupancyForecaster(nn.Module):
             occ, flow = checkpoint(self.head, y, skip_rep, use_reentrant=False)
         else:
             occ, flow = self.head(y, skip_rep)
-        occ = occ.view(B, cfg.t_out, cfg.n_groups, H, W)
+        # Occupancy logits are produced in float32, deliberately, even under
+        # autocast.  The residual base is log(1e-5 / (1 - 1e-5)) = -11.5, and
+        # bfloat16's resolution at that magnitude is 0.044 -- so in bf16 every
+        # correction the network tries to make smaller than that is rounded
+        # away, the occupancy term freezes at its initial value, and the model
+        # sits at persistence forever while every other loss term trains
+        # normally.  That is exactly what it did before this cast.
+        occ = occ.float().view(B, cfg.t_out, cfg.n_groups, H, W)
         if cfg.residual_from_last:
             # A tighter clamp keeps the floor this puts under every empty cell
             # negligible: at 1e-5 the spurious mass is 0.6% of a typical frame's
             # total, against 6% at 1e-4.
-            last = past[:, -1:].clamp(1e-5, 1 - 1e-5)
+            last = past[:, -1:].float().clamp(1e-5, 1 - 1e-5)
             occ = occ + (torch.log(last) - torch.log1p(-last))
-        flow = flow.view(B, cfg.t_out, 2, H, W) if flow is not None else None
+        flow = flow.float().view(B, cfg.t_out, 2, H, W) if flow is not None else None
         return {"occupancy_logits": occ, "flow": flow}
 
     @staticmethod

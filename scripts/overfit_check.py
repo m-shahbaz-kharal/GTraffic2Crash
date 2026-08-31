@@ -32,6 +32,9 @@ def main():
     ap.add_argument("--batch-size", type=int, default=4)
     ap.add_argument("--steps", type=int, default=400)
     ap.add_argument("--learning-rate", type=float, default=1e-3)
+    ap.add_argument("--checkpointing", action="store_true",
+                    help="needed for the base model: without it a batch of 4 does "
+                         "not fit in 80 GiB")
     args = ap.parse_args()
 
     dev = torch.device("cuda")
@@ -45,7 +48,8 @@ def main():
     B = batch["past_occupancy"].shape[0]
 
     cfg = OccupancyForecaster.preset(args.size, rows=dm.grid.rows, cols=dm.grid.cols,
-                                     n_static=static.shape[0], checkpointing=False)
+                                     n_static=static.shape[0],
+                                     checkpointing=args.checkpointing)
     net = OccupancyForecaster(cfg).to(dev)
     n, _ = net.parameter_count()
     opt = torch.optim.AdamW(net.parameters(), lr=args.learning_rate, weight_decay=0.0)
@@ -74,6 +78,7 @@ def main():
           f"{'count':>8} {'soft_iou':>9} {'bias':>7} {'sec':>6}")
 
     t0 = time.time()
+    net.train()
     for i in range(args.steps + 1):
         with torch.autocast("cuda", dtype=torch.bfloat16):
             pred = net(batch["past_occupancy"], static.unsqueeze(0).expand(B, -1, -1, -1))

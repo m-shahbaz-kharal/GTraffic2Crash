@@ -14,4 +14,4 @@ cd /lustre/fs1/home/mu290328/github-repos/GTraffic2Crash
 echo "======== small ========"
 .venv/bin/python scripts/overfit_check.py --size small --steps 400 --batch-size 4
 echo; echo "======== base ========"
-.venv/bin/python scripts/overfit_check.py --size base --steps 250 --batch-size 4
+.venv/bin/python scripts/overfit_check.py --size base --steps 250 --batch-size 4 --checkpointing

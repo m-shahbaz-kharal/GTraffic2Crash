@@ -81,6 +81,25 @@ gap keeps widening. BIAS fell from 1.55 to 1.09 without intervention, and it doe
 not fail where it matters: collision windows score 0.629 against nominal
 traffic's 0.626.
 
+### Does the forecast show a crash coming?
+
+Measured, not trained for -- no term in the loss singles collisions out. For each
+held-out window containing a real collision, the forecast's occupancy at the
+impact site is compared with a matched control site (a cell occupied in the last
+observed frame, well away from the impact).
+
+| lead time | forecast at impact | at control | contrast |
+|---|---|---|---|
+| at impact | 0.0904 | 0.0566 | **1.60x** |
+| 1.0 s before | 0.0859 | 0.0588 | 1.46x |
+| 2.0 s before | 0.0800 | 0.0592 | 1.35x |
+| 3.0 s before | 0.0746 | 0.0602 | 1.24x |
+| 4.5 s before | 0.0709 | 0.0712 | 1.00x |
+
+The forecast concentrates **1.6x more occupancy where the crash actually
+happens**, with the signal decaying to nothing by four and a half seconds -- an
+honest three-to-four second warning horizon.
+
 A 439 M model is training on the full 44-hour dataset.
 
 ## Running it

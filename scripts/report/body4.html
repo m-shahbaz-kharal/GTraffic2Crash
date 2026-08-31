@@ -23,6 +23,54 @@
   </figure>
 </section>
 
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">The question the project exists for</span>
+    <h2>Does the forecast make a crash visible before it happens?</h2>
+    <p class="lede">Measured, not trained for. No term in the loss singles
+    collisions out; if the forecast shows a crash coming, it is because
+    forecasting the town well is enough.</p>
+  </div>
+  <div class="col stack-s">
+    <p>For every held-out window whose future contains a real collision, the
+    impact cell and the step it happens at are known, so the forecast's occupancy
+    at that spot can be tracked as impact approaches. That number alone would
+    prove nothing &mdash; a model predicting high occupancy everywhere would score
+    well &mdash; so it is measured against a <b>matched control site</b>: a cell
+    occupied in the last observed frame, well away from the impact. The ratio is
+    what matters.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Lead time before impact</th>
+        <th class="num">forecast at impact site</th>
+        <th class="num">at control site</th>
+        <th class="num">truth at impact site</th>
+        <th class="num">contrast</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>0.0 s &mdash; the moment of impact</td><td class="num">0.0904</td><td class="num">0.0566</td><td class="num">0.0991</td><td class="num good">1.60&times;</td></tr>
+        <tr><td>1.0 s before</td><td class="num">0.0859</td><td class="num">0.0588</td><td class="num">0.0898</td><td class="num">1.46&times;</td></tr>
+        <tr><td>2.0 s before</td><td class="num">0.0800</td><td class="num">0.0592</td><td class="num">0.0807</td><td class="num">1.35&times;</td></tr>
+        <tr><td>3.0 s before</td><td class="num">0.0746</td><td class="num">0.0602</td><td class="num">0.0745</td><td class="num">1.24&times;</td></tr>
+        <tr><td>4.0 s before</td><td class="num">0.0709</td><td class="num">0.0625</td><td class="num">0.0717</td><td class="num">1.13&times;</td></tr>
+        <tr><td>4.5 s before</td><td class="num">0.0709</td><td class="num">0.0712</td><td class="num">0.0720</td><td class="num">1.00&times;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col stack-s">
+    <p><b>The forecast concentrates 1.6&times; more occupancy at the exact place a
+    crash happens than at a matched control site</b>, and the signal decays
+    smoothly to nothing by four and a half seconds &mdash; an honest three-to-four
+    second warning horizon rather than a claimed one. The forecast also tracks the
+    truth at the impact site closely (0.0800 against 0.0807 two seconds out), so
+    it is predicting the convergence rather than guessing.</p>
+    <p class="footnote">Measured on the pilot against a re-derived split, so these
+    numbers are indicative rather than a clean held-out result; the headline run
+    records its split and will produce the definitive version. The analysis now
+    records which kind of split it used alongside the numbers.</p>
+  </div>
+</section>
+
 <section class="col stack">
   <hr class="rule">
   <span class="eyebrow">Honest limits</span>

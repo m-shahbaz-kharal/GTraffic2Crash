@@ -1,0 +1,49 @@
+<section class="stack" id="results">
+  <div class="col stack-s">
+    <span class="eyebrow">Results</span>
+    <h2>__RESULTS_HEADING__</h2>
+  </div>
+  __RESULTS_BODY__
+  <figure>
+    <img alt="Two rows, each showing the ground-truth town occupancy beside the model's forecast: one at plus 1.5 seconds and one at plus 5 seconds." src="__FORECAST__">
+    <figcaption><b>The forecast, early in training.</b> Vehicles land on roads and the
+    town's structure is respected from the first few hundred steps &mdash; the map priors
+    and the residual parameterisation between them make that free. What the picture also
+    shows is the failure mode the metrics name: the prediction is fainter and more spread
+    than the truth, and its total mass grows with horizon (138 against a true 113 at
+    +1.5 s, 163 at +5.0 s). That is BIAS above 1, visible.</figcaption>
+  </figure>
+</section>
+
+<section class="col stack">
+  <hr class="rule">
+  <span class="eyebrow">Honest limits</span>
+  <h2>What this does not yet establish</h2>
+  <div class="stack-s" style="color:var(--ink-2)">
+    <p><b>One town.</b> Town05 is the town the upstream camera model was built
+    for, so it is the right first target, but nothing here says the model
+    transfers. That is a scaling axis, not a correctness question.</p>
+    <p><b>The forecast will be diffuse.</b> Every deterministic forecaster in
+    this literature is. The response is to <em>measure</em> it &mdash; BIAS and a
+    pooling sweep are in every table &mdash; rather than hide it. The documented
+    next step is a cascade: a deterministic backbone with a generative refinement
+    stage, which beats both pure approaches. Not a switch to pure diffusion,
+    which collapses on grid-level skill.</p>
+    <p><b>Crash anticipation is measured, not trained for.</b> Forecast quality
+    is reported separately on windows whose future contains a real collision, but
+    no term in the loss singles them out. Whether the forecast makes an imminent
+    collision legible is a question this answers rather than one it optimises.</p>
+  </div>
+</section>
+
+<section class="col stack">
+  <hr class="rule">
+  <p class="footnote">Built on CARLA 0.9.15, Town05. Grid geometry, coordinate
+  conventions and the mass convention are shared with the upstream
+  camera-to-bird's-eye model, so the two are interchangeable. Weights &amp;
+  Biases runs offline on this cluster; training also writes a JSON-lines
+  validation log and a forecast video per epoch, so progress is readable without
+  it.</p>
+</section>
+
+</div>

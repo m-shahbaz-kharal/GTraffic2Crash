@@ -1,0 +1,151 @@
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">Steps 03&ndash;04</span>
+    <h2>The data, and what it looks like</h2>
+    <p class="lede">The map is given to the network as constant input channels.
+    It is free information that would otherwise cost capacity to rediscover:
+    28&nbsp;% of cells touch road and hold about 80&nbsp;% of all vehicle mass.</p>
+  </div>
+  <figure>
+    <img alt="Seven panels of the Town05 static map: road coverage, lane direction as sine and cosine components, lane coherence, junctions, speed limit, and the validity mask." src="__STATIC_MAP__">
+    <figcaption><b>The map priors, rasterised with the same exact geometry as the vehicles.</b>
+    The check that this is right is the pair in the middle: <span class="mono">lane_sin</span> and
+    <span class="mono">lane_cos</span> are perfectly complementary &mdash; red/blue carriageway
+    pairs appear on north&ndash;south roads in one and on east&ndash;west roads in the other, and
+    <span class="mono">lane_coherence</span> drops exactly at junctions where directions mix.</figcaption>
+  </figure>
+
+  <div class="grid2">
+    <figure>
+      <img alt="Four zoomed panels of a 160 metre square of town at half-second intervals, showing vehicles as coloured blocks with short white motion segments." src="__MOTION__">
+      <figcaption><b>One 0.5 s step, close up.</b> Vehicles are soft multi-cell
+      footprints; the white segments are per-cell motion. Some vehicles are
+      queued at a signal and do not move at all &mdash; which is the whole
+      difficulty.</figcaption>
+    </figure>
+    <figure>
+      <img alt="Six panels around a collision: two vehicles converge along a curve over three seconds, merge into one dense blob at impact, and stay merged afterwards." src="__COLLISION__">
+      <figcaption><b>A real collision at 24.6 m/s.</b> The two vehicles close
+      along the curve for three seconds, saturate a single cell cluster at
+      impact, and stay entangled while traffic flows past. This is the signature
+      the soft-coverage representation exists to make visible.</figcaption>
+    </figure>
+  </div>
+
+  <div class="col stack">
+    <h3>Half the town is standing still</h3>
+    <p>This is the number that says whether the task is worth doing at all.</p>
+  </div>
+  <div class="tablewrap col">
+    <table>
+      <tbody>
+        <tr><td>Vehicles essentially stationary (&lt; 0.1 cell per step)</td><td class="num">55&nbsp;%</td></tr>
+        <tr><td>Vehicles moving more than half a cell per step</td><td class="num">37&nbsp;%</td></tr>
+        <tr><td>Fleet moving at any instant</td><td class="num">45&nbsp;%, swinging 32&ndash;57&nbsp;%</td></tr>
+        <tr class="hi"><td>Median displacement of a <em>moving</em> vehicle over the 5 s horizon</td><td class="num">9.0 cells &middot; 36 m</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col callout">
+    <p>Half the town is stopped at any moment, which is what urban traffic with
+    signals looks like, and is why persistence is a strong baseline. It is also
+    what makes the problem interesting rather than degenerate: the model's real
+    job is to tell <em>the vehicle that will sit still for five seconds</em> from
+    <em>the one that will travel thirty-six metres</em> &mdash; a distinction
+    that cannot be made from a single frame. It needs the queue, the signal phase
+    implied by the traffic's own behaviour, and the road ahead.</p>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">Step 05</span>
+    <h2>The network</h2>
+    <p class="lede">Two measured results from the literature drove the shape, not taste.</p>
+  </div>
+  <div class="grid2 col" style="max-width:none">
+    <div class="stack-s">
+      <h3>Attention along one axis at a time</h3>
+      <p style="font-size:.94rem;color:var(--ink-2)">Earthformer ablates seven ways of factorising
+      attention over a space-time grid under identical conditions. Attending to time, then height,
+      then width &mdash; plus a handful of global vectors to restore long-range mixing &mdash; wins
+      on every metric on both benchmarks and is among the cheapest. Joint space-time cuboids and
+      Video-Swin windows are strictly dominated.</p>
+    </div>
+    <div class="stack-s">
+      <h3>No recurrence</h3>
+      <p style="font-size:.94rem;color:var(--ink-2)">On low-frequency grid data &mdash; traffic flow
+      and weather, the closest public analogues &mdash; the OpenSTL benchmark finds that predicting
+      every future frame in one parallel pass matches recurrent rollout at a twenty-sixth of the
+      compute, and sidesteps autoregressive drift entirely. Town traffic at 2 Hz is low-frequency.</p>
+    </div>
+  </div>
+  <figure style="padding:26px 20px 8px">
+    <svg viewBox="0 0 980 250" width="100%" role="img" aria-label="Data flow through the network: input tensor, convolutional stem, axial encoder, axial decoder with cross-attention, convolutional head, and two outputs.">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="currentColor" color="currentColor">
+        <!-- input -->
+        <rect x="6" y="60" width="120" height="76" rx="3" fill="none" stroke="currentColor" stroke-opacity=".38"/>
+        <text x="66" y="82" text-anchor="middle" font-weight="600">input</text>
+        <text x="66" y="99" text-anchor="middle" fill-opacity=".72">10 frames</text>
+        <text x="66" y="113" text-anchor="middle" fill-opacity=".72">3 + 6 ch</text>
+        <text x="66" y="127" text-anchor="middle" fill-opacity=".72">144 x 160</text>
+        <line x1="128" y1="98" x2="160" y2="98" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+        <!-- stem -->
+        <rect x="162" y="60" width="112" height="76" rx="3" fill="currentColor" fill-opacity=".05" stroke="currentColor" stroke-opacity=".38"/>
+        <text x="218" y="82" text-anchor="middle" font-weight="600">conv stem</text>
+        <text x="218" y="99" text-anchor="middle" fill-opacity=".72">full res,</text>
+        <text x="218" y="113" text-anchor="middle" fill-opacity=".72">then /4</text>
+        <line x1="276" y1="98" x2="308" y2="98" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+        <!-- encoder -->
+        <rect x="310" y="42" width="150" height="112" rx="3" fill="currentColor" fill-opacity=".05" stroke="currentColor" stroke-opacity=".38"/>
+        <text x="385" y="64" text-anchor="middle" font-weight="600">encoder x12</text>
+        <text x="385" y="83" text-anchor="middle" fill-opacity=".72">attend time</text>
+        <text x="385" y="99" text-anchor="middle" fill-opacity=".72">attend height</text>
+        <text x="385" y="115" text-anchor="middle" fill-opacity=".72">attend width</text>
+        <text x="385" y="137" text-anchor="middle" fill-opacity=".55">+ 8 global vectors</text>
+        <line x1="462" y1="98" x2="494" y2="98" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+        <!-- decoder -->
+        <rect x="496" y="42" width="158" height="112" rx="3" fill="currentColor" fill-opacity=".05" stroke="currentColor" stroke-opacity=".38"/>
+        <text x="575" y="64" text-anchor="middle" font-weight="600">decoder x8</text>
+        <text x="575" y="83" text-anchor="middle" fill-opacity=".72">10 future queries,</text>
+        <text x="575" y="99" text-anchor="middle" fill-opacity=".72">seeded from the</text>
+        <text x="575" y="115" text-anchor="middle" fill-opacity=".72">last observed frame</text>
+        <text x="575" y="137" text-anchor="middle" fill-opacity=".55">+ cross-attention</text>
+        <line x1="656" y1="98" x2="688" y2="98" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+        <!-- head -->
+        <rect x="690" y="42" width="118" height="112" rx="3" fill="currentColor" fill-opacity=".05" stroke="currentColor" stroke-opacity=".38"/>
+        <text x="749" y="64" text-anchor="middle" font-weight="600">conv head</text>
+        <text x="749" y="83" text-anchor="middle" fill-opacity=".72">upsample x4</text>
+        <text x="749" y="99" text-anchor="middle" fill-opacity=".72">separate bodies</text>
+        <text x="749" y="115" text-anchor="middle" fill-opacity=".72">for each output</text>
+        <line x1="810" y1="80" x2="842" y2="66" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+        <line x1="810" y1="116" x2="842" y2="130" stroke="currentColor" stroke-opacity=".5" marker-end="url(#ar)"/>
+        <!-- outputs -->
+        <rect x="844" y="40" width="130" height="46" rx="3" fill="none" stroke="currentColor" stroke-opacity=".38"/>
+        <text x="909" y="60" text-anchor="middle" font-weight="600">occupancy</text>
+        <text x="909" y="76" text-anchor="middle" fill-opacity=".72">10 x 3 x 144 x 160</text>
+        <rect x="844" y="110" width="130" height="46" rx="3" fill="none" stroke="currentColor" stroke-opacity=".38"/>
+        <text x="909" y="130" text-anchor="middle" font-weight="600">flow</text>
+        <text x="909" y="146" text-anchor="middle" fill-opacity=".72">10 x 2 x 144 x 160</text>
+        <!-- skip -->
+        <path d="M218 60 C 218 18, 749 18, 749 42" fill="none" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3" marker-end="url(#ar)"/>
+        <text x="483" y="14" text-anchor="middle" fill-opacity=".62">skip: the last observed frame at full resolution</text>
+        <!-- residual -->
+        <path d="M66 136 C 66 218, 909 218, 909 156" fill="none" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/>
+        <text x="487" y="234" text-anchor="middle" fill-opacity=".62">residual: the head predicts the change from the last observed frame, so the network begins as exact persistence</text>
+      </g>
+    </svg>
+    <figcaption style="border-top:1px solid var(--rule);margin-top:18px">
+      <b>439 M parameters, 14,400 tokens per sample.</b> Patch size is 4 cells &mdash; a 16 m token
+      &mdash; because the arithmetic is decisive: at patch 2 the same depth costs 166 training
+      TFLOPs a sample, under half an epoch in a 30 GPU-hour budget. At patch 4 it costs 29 and
+      affords two and a half. The two dashed paths are what keep the coarse tokens honest: a
+      full-resolution skip so the head can place a vehicle in the right 4 m cell, and a residual
+      so capacity is spent on what moves.</figcaption>
+  </figure>
+</section>

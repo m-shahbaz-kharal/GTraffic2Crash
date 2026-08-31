@@ -1,0 +1,147 @@
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">The objective</span>
+    <h2>Most of the conventional choices are wrong for this target</h2>
+    <p class="lede">The target is <em>soft</em>. A cell holding 0.4 is not a weak
+    positive; it is an exact measurement of area. That single fact rules out most
+    of what the occupancy literature reaches for.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Ruled out</th><th>Why, specifically</th></tr></thead>
+      <tbody>
+        <tr><td>Soft Dice, soft IoU, Tversky</td>
+            <td>Provably not minimised at the truth for fractional targets. Reproduced here: with a target of 0.400, linear soft Dice is minimised at <span class="mono bad">1.000</span>, while soft cross-entropy is minimised at <span class="mono good">0.400</span>. Every non-zero cell in this grid is fractional, so soft Dice would inflate all of them.</td></tr>
+        <tr><td>Lovász-softmax</td>
+            <td>The convex closure of a set function over <em>misclassified pixel sets</em> &mdash; undefined when the ground truth is 0.4. Applying it needs thresholding, which destroys the sub-cell information that is the entire point of soft coverage.</td></tr>
+        <tr><td>Focal loss as the primary term</td>
+            <td>Not strictly proper for any &gamma; &gt; 0; its minimiser is not the true posterior and the bias direction is under-confidence, which here means quietly losing vehicles.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col stack">
+    <h3>So the core is a plain soft cross-entropy</h3>
+    <p>It is minimised exactly at <span class="mono">p = y</span>, defined for
+    fractional targets without modification, and decomposable over cells &mdash;
+    so its gradient scale does not swing with how many vehicles happen to be in
+    the frame, as every Dice-family loss does.</p>
+    <p>The usual objection is that 98&nbsp;% empty cells will swamp the gradient.
+    That bites only at initialisation, where a network predicting 0.5 everywhere
+    has twenty thousand empty cells outvoting four hundred occupied ones. The fix
+    is the one Lin et al. prescribed for exactly this regime: initialise the
+    output bias to the prior. After that, an empty cell the network already calls
+    empty has gradient <span class="mono">p&nbsp;&minus;&nbsp;y</span>, which is
+    near zero.</p>
+    <p>Three more terms carry what a per-cell loss cannot see: <b>flow</b> (what
+    the motion is, not just where the mass is), <b>flow-trace</b> (that mass
+    <em>moves</em> rather than teleporting), and <b>count</b> (that the number of
+    vehicles is right).</p>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">What went wrong</span>
+    <h2>Three bugs, none visible from the total loss</h2>
+    <p class="lede">All three were found by one test: train on a single batch and
+    watch whether the network can fit what it is shown. The total loss fell
+    steadily throughout &mdash; on the strength of the flow term &mdash; while
+    the occupancy term had not moved since initialisation.</p>
+  </div>
+
+  <div class="stack">
+    <div class="finding">
+      <div class="top"><span class="tag">Silent</span><h3>The flow-trace term was warping the prediction</h3></div>
+      <dl class="body">
+        <dt>Symptom</dt><dd>Occupancy cross-entropy sat at 0.19264 for 120 steps and 0.1613 for 400. Soft-IoU never left persistence.</dd>
+        <dt>Cause</dt><dd>Warping the <em>predicted</em> occupancy makes the term a second, much louder opinion about occupancy. Early in training the predicted flow is meaningless, so that opinion points nowhere.</dd>
+        <dt>Evidence</dt><dd>The gradient it put on the occupancy head was <span class="mono">5.76e-2</span> against the occupancy term's own <span class="mono">1.10e-3</span> &mdash; fifty times larger.</dd>
+        <dt>Fix</dt><dd>Warp the <em>observed</em> occupancy instead. The term keeps its meaning &mdash; your flow must explain the motion that actually happened &mdash; while its gradient is confined to the flow head.</dd>
+      </dl>
+    </div>
+
+    <div class="finding">
+      <div class="top"><span class="tag">Scale</span><h3>The count term was a sum where everything else was a mean</h3></div>
+      <dl class="body">
+        <dt>Symptom</dt><dd>Total mass pinned; BIAS read exactly 1.000 while the forecast stayed at persistence.</dd>
+        <dt>Cause</dt><dd>The cross-entropy is a mean over ~1.7 million weighted cells, so its gradient on one cell is of order 1/1.7e6. The count term is a sum over the same cells, so its gradient on a cell is of order 1/(vehicle count) &mdash; about a thousand times larger. At any weight that makes the two comparable in <em>value</em>, the count term simply wins.</dd>
+        <dt>Fix</dt><dd>Weight chosen by matching the two gradients at an occupied cell, which puts it near <span class="mono">1e-3</span> rather than 0.5.</dd>
+      </dl>
+    </div>
+
+    <div class="finding">
+      <div class="top"><span class="tag">Interference</span><h3>Occupancy and flow shared a head body</h3></div>
+      <dl class="body">
+        <dt>Symptom</dt><dd>Even with the other two fixed, occupancy learned at a third of its solo rate.</dd>
+        <dt>Cause</dt><dd>The flow gradient dominated the features both heads read from.</dd>
+        <dt>Fix</dt><dd>Separate fusion bodies &mdash; two extra 3&times;3 convolutions, 150k parameters. The transformer trunk stays shared, which is where multi-task transfer actually lives.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Occupancy cross-entropy over 120 steps, one real batch</th><th class="num">start</th><th class="num">end</th><th class="num">change</th></tr></thead>
+      <tbody>
+        <tr><td>Occupancy term alone &mdash; the ceiling</td><td class="num">0.15137</td><td class="num">0.08058</td><td class="num good">&minus;46.8&nbsp;%</td></tr>
+        <tr><td>Full loss, as first written</td><td class="num">0.19264</td><td class="num">0.19272</td><td class="num bad">+0.0&nbsp;%</td></tr>
+        <tr class="hi"><td>Full loss, all three fixes</td><td class="num">0.15137</td><td class="num">0.07965</td><td class="num good">&minus;47.4&nbsp;%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="col footnote">The fixed objective now learns occupancy slightly
+  <em>faster</em> than the occupancy term on its own &mdash; which is what
+  auxiliary tasks are supposed to do, and the opposite of what they were doing
+  before. Worth noting what the loss is <em>not</em> able to reach: cross-entropy
+  against a soft target bottoms out at the target's entropy, not at zero. On a
+  real batch that floor is 0.055 against persistence's 0.201, so 73&nbsp;% of the
+  gap is genuinely reducible &mdash; a frozen term was a real failure, not an
+  artefact.</p>
+</section>
+
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">The bar</span>
+    <h2>What the model has to beat</h2>
+    <p class="lede">Two baselines, scored on the same held-out batches every
+    validation epoch. The second is deliberately given an advantage no deployed
+    system could have.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Forecast</th><th class="num">mean soft-IoU</th><th class="num">at +0.5 s</th><th class="num">at +5.0 s</th><th class="num">BIAS</th></tr></thead>
+      <tbody>
+        <tr><td>Persistence &mdash; repeat the last frame</td><td class="num">0.368</td><td class="num">0.547</td><td class="num">0.312</td><td class="num">1.000</td></tr>
+        <tr><td>Constant velocity, flow estimated from the grids</td><td class="num">0.328</td><td class="num">0.604</td><td class="num">0.200</td><td class="num">1.000</td></tr>
+        <tr class="hi"><td>Constant velocity, <em>ground-truth</em> flow</td><td class="num">0.429</td><td class="num">0.819</td><td class="num">0.307</td><td class="num">0.983</td></tr>
+        <tr><td>Untrained model (persistence by construction)</td><td class="num">0.366</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">1.004</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col stack">
+    <p>Three things follow. The bar is <b>0.429</b>. Constant velocity with
+    <em>estimated</em> flow is worse than doing nothing, because dense optical
+    flow on a near-binary sparse grid is unreliable &mdash; so the oracle version
+    is the honest one to beat. And oracle constant velocity, far better at half a
+    second, is <em>worse than persistence</em> at five (0.307 against 0.312):
+    repeated warping spreads mass, and vehicles do not travel in straight lines
+    for five seconds.</p>
+    <p>That crossover is the shape of the problem. Short horizons reward motion
+    modelling; long horizons reward knowing where the roads go and where the
+    traffic will stop.</p>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">Measurement</span>
+    <h2>Why every table here carries BIAS</h2>
+    <p>A deterministic forecaster can win a thresholded overlap score by hedging
+    &mdash; predicting less area than really exists, so misses and false alarms
+    trade favourably. A forecast holding only 0.3&times; the true mass still
+    scores <span class="mono">F1 0.843</span>; only BIAS exposes it, at
+    <span class="mono bad">0.303</span>. Nothing is averaged over the horizon
+    either: a single number hides how fast quality decays with lead time, and
+    every model in this literature decays.</p>
+  </div>
+</section>

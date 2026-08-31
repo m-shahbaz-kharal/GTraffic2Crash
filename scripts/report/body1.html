@@ -1,0 +1,102 @@
+<div class="wrap">
+
+<header class="hero">
+  <div class="hero-grid">
+    <div class="stack">
+      <span class="eyebrow">CARLA Town05 &middot; bird's-eye occupancy forecasting</span>
+      <h1>Predict the town,<br>and the crash <em>shows up</em>.</h1>
+      <p class="lede">Given the last five seconds of a whole town's traffic as a
+      bird's-eye occupancy grid, forecast the next five. A model that can say
+      where every vehicle will be in three seconds has already learned what a
+      crash predictor needs &mdash; so the crash is a read-out of the forecast,
+      not a separate model.</p>
+    </div>
+    <div class="statusbox" id="status">
+      <div><span class="k">town</span><span class="v">Town05, 302 spawn points</span></div>
+      <div><span class="k">grid</span><span class="v">144 &times; 160 cells &middot; 4 m</span></div>
+      <div><span class="k">step / horizon</span><span class="v">0.5 s &middot; 5 s in, 5 s out</span></div>
+      <div><span class="k">traffic generated</span><span class="v" id="s-hours">50 h target</span></div>
+      <div><span class="k">model</span><span class="v">439 M, axial space-time</span></div>
+      <div><span class="k">throughput</span><span class="v">2.02 samples/s per H100</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="col stack">
+  <span class="eyebrow">The choice that shapes everything else</span>
+  <h2>Why forecast the grid instead of classifying a crash</h2>
+  <p>A crash label is one bit at one instant. It is rare, it arrives too late to
+  act on, and a model trained on it learns a shortcut &mdash; <em>two blobs are
+  close together</em> &mdash; rather than dynamics.</p>
+  <p>A forecast is dense supervision: every cell, at every future step. And the
+  representation is chosen so that a collision has an unmistakable signature.
+  Each cell holds the <strong>fraction of its area covered by a vehicle
+  footprint</strong>, not a binary flag, so two vehicles occupying the same
+  ground saturate that cell. Soft coverage also keeps sub-metre position on a
+  4&nbsp;m grid: a car straddling a boundary splits its area between the two
+  cells in proportion, which is what makes velocity observable across frames
+  even when a vehicle moves less than one cell.</p>
+</section>
+
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">Order of work</span>
+    <h2>Each step produces something checkable before the next begins</h2>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="n">01 / GEOMETRY</div><h3>Exact rasteriser</h3>
+      <p>Rotated vehicle rectangle against axis-aligned cell, by convex-polygon clipping. Validated against closed-form geometry and against the upstream project's own grids.</p></div>
+    <div class="step"><div class="n">02 / PROBE</div><h3>Measure the simulator</h3>
+      <p>Throughput, congestion and collision rate measured before committing to a data plan. Every number below came from a probe, not an assumption.</p></div>
+    <div class="step"><div class="n">03 / GENERATE</div><h3>50 hours of traffic</h3>
+      <p>400 episodes across 40 CARLA servers. Raw vehicle state at 10 Hz, so resolution and time step stay revisable.</p></div>
+    <div class="step"><div class="n">04 / TENSORISE</div><h3>Sparse rasters</h3>
+      <p>Per-class coverage and flow, stored sparsely at 1.6 KB a frame and densified in the loader.</p></div>
+    <div class="step"><div class="n">05 / TRAIN</div><h3>Against the baselines</h3>
+      <p>Persistence and constant velocity are scored on the same batches every validation epoch, so the only number reported is the gap.</p></div>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="col stack-s">
+    <span class="eyebrow">Step 02</span>
+    <h2>What the simulator would actually give us</h2>
+    <p class="lede">Six questions that decide the shape of the dataset, and none
+    of them answerable from documentation.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Question</th><th>Measured answer</th><th>What it changed</th></tr></thead>
+      <tbody>
+        <tr><td>How fast does Town05 run?</td>
+            <td class="mono">4.4&times; realtime at 60 vehicles, 1.1&times; at 200, 0.8&times; at 302</td>
+            <td>Fleet size set to 100&ndash;260; 40 parallel servers</td></tr>
+        <tr><td>Does turning rendering off help?</td>
+            <td class="mono">Only 1.3&times;. CARLA is CPU-bound</td>
+            <td>Generation moved to idle V100 nodes, leaving the H100s for training</td></tr>
+        <tr><td>Is the traffic gridlocked?</td>
+            <td class="mono">No &mdash; moving fraction oscillates 0.25&ndash;0.83 on the light cycle</td>
+            <td>Stop-and-go kept; it is the phenomenon worth forecasting</td></tr>
+        <tr><td>Do Traffic-Manager vehicles ever crash?</td>
+            <td class="mono">Never with default settings &mdash; 0 per minute</td>
+            <td>Nominal episodes are a genuinely clean baseline</td></tr>
+        <tr class="hi"><td>&hellip; with bad actors?</td>
+            <td class="mono">126 per simulated minute across 172 of 250 vehicles</td>
+            <td><b>Behaviour profiles rewritten</b> &mdash; see below</td></tr>
+        <tr><td>Is a finer physics timestep worth it?</td>
+            <td class="mono">dt 0.025 s costs 30% throughput, changes nothing at a 0.5 s output step</td>
+            <td>Simulator fixed at 20 Hz</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col callout">
+    <p>The bad-actor result was the useful one. Telling vehicles to
+    <code>ignore_vehicles_percentage</code> makes them drive <em>through</em>
+    each other &mdash; 126 collisions a minute is carnage, not traffic. The
+    profiles were rewritten to leave collision avoidance <em>on</em> and break
+    the <em>rules</em> instead: running red lights, speeding with a short
+    following gap, weaving between lanes. Crashes then happen for the reasons
+    real crashes happen, at roughly one meaningful impact per simulated
+    minute.</p>
+  </div>
+</section>

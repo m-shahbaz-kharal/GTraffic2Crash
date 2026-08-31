@@ -129,9 +129,14 @@ def forecasting_loss(pred, batch, w: LossWeights, cells_per_frame_step: float):
         fl = torch.cat([pred["flow"][:, :1], fl], dim=1)[:, :T]
         moved = warp_forward(src.reshape(B * T, C, H, W),
                              (fl * cells_per_frame_step).reshape(B * T, 2, H, W))
-        moved = moved.reshape(B, T, C, H, W).clamp(1e-6, 1 - 1e-6)
-        terms["flow_trace"] = (F.binary_cross_entropy(moved, target, reduction="none")
-                               * weight).sum() / weight.sum().clamp_min(1.0)
+        # Expressed through logits rather than probabilities: mathematically the
+        # same, but `binary_cross_entropy` on probabilities is unsafe under
+        # autocast, while the logit form is not.
+        moved = moved.reshape(B, T, C, H, W).clamp(1e-5, 1 - 1e-5)
+        moved_logits = torch.log(moved) - torch.log1p(-moved)
+        terms["flow_trace"] = (F.binary_cross_entropy_with_logits(
+            moved_logits, target, reduction="none") * weight).sum() \
+            / weight.sum().clamp_min(1.0)
 
     # Count consistency, per frame and per class, in units of vehicles.  Weighted
     # cross-entropy is no longer proper, so it drifts; this measures the drift in

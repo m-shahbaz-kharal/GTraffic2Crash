@@ -147,8 +147,6 @@ class Forecaster(L.LightningModule):
                                        self.weights, self.cells_per_frame_step)
         for k, v in terms.items():
             self.log(f"train/{k}", v, on_step=True, on_epoch=False, prog_bar=(k == "total"))
-        self.log("train/learning_rate", self.optimizers().param_groups[0]["lr"],
-                 on_step=True, on_epoch=False)
         return loss
 
     def on_validation_epoch_start(self):

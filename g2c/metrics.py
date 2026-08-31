@@ -75,8 +75,10 @@ class Accumulator:
             add("count_true", yn.sum((0, 2)))
 
         if flow_pred is not None and flow_true is not None:
-            m = (y.sum(2, keepdim=True) > 1e-3).float()
-            epe = ((flow_pred - flow_true) ** 2).sum(2, keepdim=True).sqrt() * m
+            # These stay 5-D (a singleton class axis), so they need their own
+            # reduction; `dims` is for the 4-D occupancy tensors.
+            m = (y.sum(2) > 1e-3).float()
+            epe = ((flow_pred - flow_true) ** 2).sum(2).sqrt() * m
             add("flow_endpoint_error", epe.sum(dims))
             add("flow_cells", m.sum(dims))
         self.n += B

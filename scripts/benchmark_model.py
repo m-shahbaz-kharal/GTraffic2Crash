@@ -6,6 +6,7 @@ That number decides the model size, the batch size and how much data is worth
 generating, so it is measured rather than assumed.
 """
 import argparse
+import gc
 import os
 import sys
 import time
@@ -45,8 +46,11 @@ def bench(size, batch, steps=12, checkpointing=True, rows=144, cols=160, t=10):
             times.append(time.time() - t0)
     peak = torch.cuda.max_memory_allocated() / 2**30
     dt = sum(times) / len(times)
-    del net, opt
-    torch.cuda.empty_cache()
+    # Free everything before returning: a Python frame that still references a
+    # tensor keeps its whole graph alive, and the next configuration then OOMs
+    # for reasons that have nothing to do with its own size.
+    del net, opt, past, static, fut, flow, b, pred, loss
+    gc.collect(); torch.cuda.empty_cache(); torch.cuda.reset_peak_memory_stats()
     return {"size": size, "parameters_millions": n / 1e6, "batch": batch,
             "checkpointing": checkpointing, "seconds_per_step": round(dt, 3),
             "samples_per_second": round(batch / dt, 2),
@@ -60,8 +64,8 @@ if __name__ == "__main__":
     print(torch.cuda.get_device_name(0),
           f"{torch.cuda.get_device_properties(0).total_memory/2**30:.0f} GiB")
     rows = []
-    for size, batch, ckpt in [("small", 16, False), ("base", 4, True), ("base", 8, True),
-                              ("base", 8, False), ("base", 16, True), ("large", 8, True)]:
+    for size, batch, ckpt in [("small", 8, True), ("base", 2, True), ("base", 4, True),
+                              ("base", 6, True), ("base", 8, True), ("large", 4, True)]:
         try:
             r = bench(size, batch, checkpointing=ckpt)
             rows.append(r)
@@ -73,5 +77,6 @@ if __name__ == "__main__":
                   f"{r['peak_memory_gib']:5.1f} GiB  "
                   f"-> {hours:5.2f} h/epoch on 1 GPU, {hours/2:5.2f} h on 2")
         except RuntimeError as e:
-            print(f"{size} batch {batch} checkpointing={ckpt}: {str(e)[:90]}")
-            torch.cuda.empty_cache()
+            print(f"{size:>6} batch {batch:>2} checkpointing={str(ckpt):>5}: "
+                  f"{str(e).splitlines()[0][:80]}")
+            gc.collect(); torch.cuda.empty_cache(); torch.cuda.reset_peak_memory_stats()

@@ -39,6 +39,9 @@ def main():
     ap.add_argument("--val-stride", type=int, default=5)
     ap.add_argument("--max-batches", type=int, default=0)
     ap.add_argument("--videos", type=int, default=3)
+    ap.add_argument("--allow-rederived-split", action="store_true",
+                    help="proceed when the run recorded no split; the result is "
+                         "then not a valid held-out evaluation")
     ap.add_argument("--val-fraction", type=float, default=0.15,
                     help="must match the value training used, or the split differs "
                          "and the held-out set is no longer held out")
@@ -63,8 +66,21 @@ def main():
               f"({len(val_ids)} held-out episodes of {rec['n_episodes_on_disk']})")
     else:
         _, val_ids = split_episodes(store.meta, args.val_fraction, 0)
-        print(f"[eval] no recorded split; re-deriving from {len(store.meta)} episodes "
-              f"at val_fraction {args.val_fraction}")
+        cfg_path = os.path.join(os.path.dirname(os.path.dirname(args.checkpoint)),
+                                "config.json")
+        saw = None
+        if os.path.exists(cfg_path):
+            saw = json.load(open(cfg_path)).get("max_episodes")
+        print(f"!! WARNING: this run recorded no episode split, so it is being "
+              f"re-derived from the {len(store.meta)} episodes now on disk.")
+        print(f"!! If the run trained on a different number of episodes, the "
+              f"'held-out' set below overlaps its training data and these numbers "
+              f"are NOT a valid held-out evaluation. Use the run's own in-training "
+              f"validation instead.")
+        if not args.allow_rederived_split:
+            print("!! Refusing. Pass --allow-rederived-split to proceed anyway "
+                  "(as a code-path check, not as a result).")
+            return 1
     val = OccupancyWindows(store, cfg.t_in, cfg.t_out, args.val_stride, episodes=val_ids)
     print(f"[eval] {len(val):,} held-out windows from {len(val_ids)} episodes")
     print(f"[eval] scenarios: {dict(Counter(val.scenario(i) for i in range(len(val))))}")

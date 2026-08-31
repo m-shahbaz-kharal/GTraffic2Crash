@@ -99,8 +99,16 @@ mask. The road prior is worth a great deal: 28 % of cells touch road and hold
 80 % of all vehicle mass. Telling the model where a vehicle *can* be is free
 information that it would otherwise spend capacity rediscovering.
 
-**Flow channels** (targets, and inputs for past frames): coverage-weighted mean
-velocity (v_x, v_y) per cell, in m/s. See §4.3 for why these earn their place.
+**Flow channels** — coverage-weighted mean velocity (v_x, v_y) per cell, in m/s.
+These are an **output only, never an input.** The upstream camera model produces
+occupancy, not velocity, so feeding ground-truth flow into the network would give
+it information it will not have at deployment and would make every number
+optimistic. The model must infer motion from the sequence of occupancy grids —
+which is precisely what ten frames of history are for. See §4.3.
+
+**Validity mask.** The 11 % of padded cells and any cell outside the town
+boundary are excluded from both the loss and every metric, so that trivially
+empty area cannot inflate a score.
 
 Traffic-light state is recorded in the raw layer but **not** fed to the model.
 The task is to predict traffic from traffic; feeding the signal phase would let
@@ -209,9 +217,15 @@ that fails at 460 M has failed for a reason worth knowing, whereas a model that
 fails at 15 M might simply be too small. Activations at batch 4 in bf16 with
 checkpointing are ~20 GB, which fits one H100 with room to spare.
 
-If the 460 M model overfits, that is a *measurable* outcome and the response is
-more data, which §5 shows is cheap. Starting small and scaling up would confound
-the two.
+Whether 460 M is too large for the data is an open question, and an honest one:
+375,000 stride-1 windows carry far less independent information than their token
+count suggests. But it is a *measurable* question — a held-out split answers it
+directly — and the response to a positive answer is more simulated hours, which
+§5 shows are cheap, rather than a smaller model. Starting small and scaling up
+would confound capacity with data volume and leave neither question answered.
+Width and depth are configuration, so the experiment is a one-line change; the
+smoke tests in §7 run a small configuration for speed, and the headline run does
+not.
 
 ---
 
@@ -265,8 +279,9 @@ nothing. The imbalance bites at *initialisation*, where p = 0.5 everywhere and
 20,000 empty cells outvote 400 occupied ones. The fix is the one Lin et al.
 prescribed for exactly this and which they report was necessary to keep training
 from diverging: **initialise the output bias to the prior**, here
-`-log((1 - 0.02) / 0.02) = -3.9`. Cheap, principled, and it removes the reason
-to reach for focal loss at all.
+`-log((1 - q) / q)` where q is the measured per-channel occupancy rate on the
+training set (about 0.015 for cars, so roughly -4.2). Cheap, principled, and it
+removes the reason to reach for focal loss at all.
 
 `w` is a per-cell weight, not a focal modulator: `w = 1 + 9 * dilate(y > 0)`.
 Cells at or near a vehicle count ten times a cell in the middle of a field. This
@@ -381,10 +396,17 @@ before the model is:
 
 1. **Persistence** — repeat the last observed frame. At 5 s this should be poor,
    but it is the floor, and on sparse grids it is a surprisingly strong floor.
-2. **Constant velocity** — warp the last frame by the observed flow field. This
-   is the honest baseline: it captures everything obtainable without learning
-   anything about roads, signals or interaction. **The model's entire value is
-   the gap between it and this.**
+2. **Constant velocity, oracle flow** — warp the last observed frame by the
+   *ground-truth* velocity field. This is deliberately stronger than anything
+   deployable: it answers "even given perfect knowledge of every vehicle's
+   current velocity, how far does pure extrapolation get?" Anything the model
+   gains over this is knowledge of roads, signals and interaction — which is the
+   entire point of training it.
+3. **Constant velocity, estimated flow** — the same, with velocity estimated from
+   the last two observed occupancy grids. This is the deployable version of the
+   same idea and the fairer head-to-head.
+
+**The model's value is the gap between it and baseline 2.**
 
 Metrics, per future timestep (not averaged into one number, which hides
 degradation):

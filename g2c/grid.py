@@ -98,6 +98,12 @@ class Grid:
 # The upstream Town05 grid: 136 x 153 cells of 4 m, i.e. 544 m x 612 m.
 TOWN05_4M = Grid(-337.7955061581277, -269.6272170726676, 4.0, 136, 153)
 
+# The same footprint padded to 144 x 160, which divides cleanly by 2, 4, 8 and 16
+# and so removes every awkward remainder in the network.  The 11 % of added cells
+# lie outside the town, are always empty, and are excluded from the loss and from
+# every metric by the validity mask.
+TOWN05_PADDED = Grid(TOWN05_4M.origin_x, TOWN05_4M.origin_y, 4.0, 144, 160)
+
 
 # --------------------------------------------------------------- rasterising --
 # The intersection of a rotated vehicle rectangle with an axis-aligned cell is a

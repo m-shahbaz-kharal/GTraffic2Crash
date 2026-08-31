@@ -35,6 +35,10 @@ def main():
     ap.add_argument("--aggressive-frac", type=float, default=0.0)
     ap.add_argument("--collision-sensors", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--warmup", type=float, default=2.0,
+                    help="simulated seconds to settle before measuring; vehicles "
+                         "spawn at rest, so a short warm-up reports a jam that is "
+                         "really just the fleet accelerating")
     ap.add_argument("--out", default="")
     ap.add_argument("--timeout", type=float, default=180.0)
     args = ap.parse_args()
@@ -135,9 +139,27 @@ def main():
         print(f"[probe] {len(sensors)} collision sensors attached in "
               f"{rep['collision_sensor_spawn_seconds']}s", flush=True)
 
-    # Warm-up: let the traffic settle before timing anything.
-    for _ in range(int(2.0 / args.delta)):
+    # Warm-up: vehicles spawn at rest, so measuring immediately reports an
+    # artefact.  Trace the speed distribution through the warm-up so the right
+    # settling time can be read off rather than guessed.
+    n_warm = int(args.warmup / args.delta)
+    trace = []
+    for k in range(n_warm):
         world.tick()
+        if k % max(1, int(5.0 / args.delta)) == 0:
+            snap = world.get_snapshot()
+            sp = []
+            for v in vehicles:
+                a = snap.find(v.id)
+                if a is not None:
+                    vel = a.get_velocity()
+                    sp.append((vel.x ** 2 + vel.y ** 2) ** 0.5)
+            sp.sort()
+            trace.append({"sim_time_s": round(k * args.delta, 1),
+                          "mean": round(sum(sp) / max(len(sp), 1), 2),
+                          "median": round(sp[len(sp) // 2], 2) if sp else 0,
+                          "moving_frac": round(sum(x > 0.5 for x in sp) / max(len(sp), 1), 3)})
+    rep["warmup_trace"] = trace
     collisions.clear()
 
     n_ticks = int(args.seconds / args.delta)
@@ -170,6 +192,8 @@ def main():
     rep["vehicles_read_per_tick"] = rows
     if speeds:
         speeds.sort()
+        rep["moving_fraction"] = round(sum(x > 0.5 for x in speeds) / len(speeds), 3)
+        rep["fraction_over_5ms"] = round(sum(x > 5.0 for x in speeds) / len(speeds), 3)
         rep["speed_m_s"] = {"mean": round(sum(speeds) / len(speeds), 2),
                             "p50": round(speeds[len(speeds) // 2], 2),
                             "p95": round(speeds[int(0.95 * len(speeds))], 2),

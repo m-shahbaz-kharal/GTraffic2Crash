@@ -6,7 +6,7 @@ echo "=== $(date +%H:%M) ==="
 echo "episodes generated : $(ls $DATA/raw 2>/dev/null | wc -l)/400"
 echo "episodes tensorised: $(ls $DATA/tensor 2>/dev/null | wc -l)"
 echo "jobs:"
-squeue -u "$USER" -r -h -o "  %.10i %-12j %-9T %.7M %R" | grep -v g2c-gen
+squeue -u "$USER" -r -h -o "  %.10i %.12j %.9T %.7M %R" | grep -v g2c-gen
 GEN=$(squeue -u "$USER" -r -h -n g2c-gen | wc -l)
 [ "$GEN" -gt 0 ] && echo "  ($GEN generation tasks running)"
 for run in pilot_small base_v1; do

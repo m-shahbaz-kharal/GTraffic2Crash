@@ -32,6 +32,9 @@ cd "$REPO"
 export WANDB_MODE=offline
 export WANDB_DIR="$REPO/runs"
 export OMP_NUM_THREADS=8
+# Newer SLURM binds a plain `srun` inside a batch job to one CPU, which
+# silently throttles the data loader to a single worker.
+export SRUN_CPUS_PER_TASK=${SLURM_CPUS_PER_TASK:-8}
 export TORCH_NCCL_ASYNC_ERROR_HANDLING=1
 
 nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader

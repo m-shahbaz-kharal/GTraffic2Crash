@@ -55,6 +55,8 @@ class Window:
     start: int
     has_collision: bool
     collision_speed: float
+    collision_step: int          # index within the future window, -1 if none
+    collision_xy: tuple
     n_speeding: int
     n_bad_actors: int
     n_vehicles: int
@@ -133,10 +135,15 @@ class OccupancyWindows(Dataset):
                 fut = slice(s + t_in, s + span)
                 cs = (z["collision_speed"][fut] if "collision_speed" in z
                       else np.zeros(t_out, np.float32))
+                hit = z["has_collision"][fut]
+                k = int(np.argmax(np.where(hit, cs, -1.0))) if hit.any() else -1
+                xy = (tuple(z["collision_xy"][s + t_in + k]) if k >= 0
+                      else (float("nan"), float("nan")))
                 self.windows.append(Window(
                     episode=e, start=s,
-                    has_collision=bool(z["has_collision"][fut].any()),
+                    has_collision=bool(hit.any()),
                     collision_speed=float(cs.max()),
+                    collision_step=k, collision_xy=xy,
                     n_speeding=int(z["n_speeding"][fut].max()),
                     n_bad_actors=int(beh[s + t_in, 1:].sum()) if beh.shape[1] > 1 else 0,
                     n_vehicles=int(z["n_vehicles"][s + t_in - 1]),
@@ -186,6 +193,8 @@ class OccupancyWindows(Dataset):
             "start": torch.tensor(w.start),
             "has_collision": torch.tensor(w.has_collision),
             "collision_speed": torch.tensor(w.collision_speed),
+            "collision_step": torch.tensor(w.collision_step),
+            "collision_xy": torch.tensor(w.collision_xy, dtype=torch.float32),
             "n_speeding": torch.tensor(w.n_speeding),
             "n_bad_actors": torch.tensor(w.n_bad_actors),
         }

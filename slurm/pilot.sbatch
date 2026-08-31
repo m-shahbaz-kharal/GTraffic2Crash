@@ -1,0 +1,28 @@
+#!/bin/bash
+#SBATCH --job-name=g2c-pilot
+#SBATCH --partition=normal
+#SBATCH --gres=gpu:2
+#SBATCH --constraint=h100
+#SBATCH --exclude=evc46,evc47,evc48,evc49,evc50
+#SBATCH --cpus-per-task=24
+#SBATCH --mem=200G
+#SBATCH --time=08:00:00
+#SBATCH --requeue
+#SBATCH --output=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash/logs/%x-%j.out
+#SBATCH --error=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash/logs/%x-%j.out
+
+# Pilot: the small model on two GPUs.  Two jobs at once -- it exercises the
+# distributed path that the headline run will use, and it produces real learning
+# curves within the hour instead of at the end of a day.
+set -u
+REPO=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash
+cd "$REPO"
+export WANDB_MODE=offline WANDB_DIR="$REPO/runs" OMP_NUM_THREADS=6
+export TORCH_NCCL_ASYNC_ERROR_HANDLING=1
+nvidia-smi --query-gpu=index,name --format=csv,noheader
+OUT="$REPO/runs/pilot_small"
+RESUME=""
+[ -f "$OUT/checkpoints/last.ckpt" ] && RESUME="--resume $OUT/checkpoints/last.ckpt"
+srun .venv/bin/python scripts/train.py --run pilot_small --size small --devices 2 \
+    --batch-size 8 --epochs 6 --learning-rate 6e-4 --warmup-steps 400 \
+    --workers 10 --train-stride 2 --val-stride 5 $RESUME

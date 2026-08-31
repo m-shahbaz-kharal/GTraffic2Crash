@@ -46,7 +46,14 @@ class LossWeights:
     occupancy: float = 1.0
     flow: float = 0.5
     trace: float = 0.5
-    count: float = 0.5
+    # Not chosen by eye.  The cross-entropy is a *mean* over ~1.7 million
+    # weighted cells so its gradient on one cell is of order 1/1.7e6; the count
+    # term is a *sum* over the same cells so its gradient on a cell is of order
+    # 1/(vehicle count), about a thousand times larger.  At 0.5 the count term
+    # simply pinned the total mass and occupancy stopped moving entirely
+    # (0 % change in 120 steps, against 47 % for the occupancy term alone).
+    # Matching the two gradients at an occupied cell puts this near 1e-3.
+    count: float = 0.001
     # Cells at or beside a vehicle count this many times a cell of open ground.
     # A fixed, stated reweighting of the sampling distribution, not a distortion
     # of the link function, so the bias it introduces is known rather than

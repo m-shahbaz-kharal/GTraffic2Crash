@@ -20,7 +20,8 @@ from g2c.train import G2CDataModule  # noqa: E402
 
 
 def run(name, batch, static, valid, dm, steps=120, lr=1e-3, occupancy_only=False,
-        residual=True, autocast=True, clip=1.0, normalise_by_positives=False):
+        residual=True, autocast=True, clip=1.0, normalise_by_positives=False,
+        weights=None):
     dev = static.device
     B = batch["past_occupancy"].shape[0]
     torch.manual_seed(0)
@@ -48,7 +49,7 @@ def run(name, batch, static, valid, dm, steps=120, lr=1e-3, occupancy_only=False
                 ce = soft_bce(pred["occupancy_logits"], lb["future_occupancy"], w)
                 loss, terms = ce, {"occupancy_cross_entropy": ce.detach()}
             else:
-                loss, terms = forecasting_loss(pred, lb, LossWeights(), cells)
+                loss, terms = forecasting_loss(pred, lb, weights or LossWeights(), cells)
         v = float(terms["occupancy_cross_entropy"])
         if i == 0:
             first = v
@@ -61,8 +62,8 @@ def run(name, batch, static, valid, dm, steps=120, lr=1e-3, occupancy_only=False
             torch.nn.utils.clip_grad_norm_(net.parameters(), clip)
         opt.step()
     delta = 100 * (first - last) / max(first, 1e-9)
-    print(f"{name:<44} {first:>9.5f} -> {last:>9.5f}   {delta:>7.2f}%   "
-          f"grad(head.occupancy.weight) {gnorm:.2e}", flush=True)
+    print(f"{name:<46} {first:>9.5f} -> {last:>9.5f}   {delta:>7.2f}%   "
+          f"grad {gnorm:.2e}", flush=True)
     del net, opt
     torch.cuda.empty_cache()
 
@@ -77,21 +78,15 @@ def main():
     dm.setup()
     batch = {k: v.to(dev) for k, v in next(iter(dm.train_dataloader())).items()}
     static, valid = dm.static.channels.to(dev), dm.static.valid.to(dev)
-    print(f"\n{'variant':<44} {'occ_ce first':>9}    {'last':>9}   {'change':>7}")
-    run("full loss, after the flow-trace fix", batch, static, valid, dm, args.steps)
-    run("occupancy term only", batch, static, valid, dm, args.steps, occupancy_only=True)
-    run("occupancy only, no residual", batch, static, valid, dm, args.steps,
-        occupancy_only=True, residual=False)
-    run("occupancy only, float32", batch, static, valid, dm, args.steps,
-        occupancy_only=True, autocast=False)
-    run("occupancy only, no gradient clipping", batch, static, valid, dm, args.steps,
-        occupancy_only=True, clip=0)
-    run("occupancy only, weight normalised to mean 1", batch, static, valid, dm,
-        args.steps, occupancy_only=True, normalise_by_positives=True)
-    run("occupancy only, lr 1e-2", batch, static, valid, dm, args.steps,
-        occupancy_only=True, lr=1e-2)
-    run("occupancy only, lr 1e-2, weight normalised", batch, static, valid, dm,
-        args.steps, occupancy_only=True, lr=1e-2, normalise_by_positives=True)
+    print(f"\n{'configuration':<46} {'occ_ce first':>9}    {'last':>9}   {'change':>7}")
+    W = LossWeights
+    run("occupancy term alone (the ceiling)", batch, static, valid, dm, args.steps,
+        occupancy_only=True)
+    run("full loss, separate heads, count 1e-3", batch, static, valid, dm, args.steps)
+    run("full loss, separate heads, count 0", batch, static, valid, dm, args.steps,
+        weights=W(count=0.0))
+    run("full loss at the training learning rate 3e-4", batch, static, valid, dm,
+        args.steps, lr=3e-4)
 
 
 if __name__ == "__main__":

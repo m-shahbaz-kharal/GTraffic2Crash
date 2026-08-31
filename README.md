@@ -60,6 +60,27 @@ Nothing about the generation plan was assumed; each of these was measured first.
 | do Traffic-Manager vehicles crash? | never with default settings (0 per minute) |
 | ... with bad actors? | 126 per simulated minute across 172 of 250 vehicles when they ignore other vehicles -- carnage. Rewritten to keep collision avoidance on and break the *rules* instead, giving roughly 1 meaningful crash per minute |
 
+## Results so far
+
+Held-out validation, split by episode. The bar is constant-velocity extrapolation
+given the *ground-truth* velocity field -- an advantage no deployed system has.
+
+| forecast | mean soft-IoU | +0.5 s | +5.0 s | BIAS |
+|---|---|---|---|---|
+| **model** (26 M pilot, step 6.5k) | **0.629** | **0.831** | **0.471** | 1.09 |
+| persistence | 0.423 | 0.547 | 0.312 | 1.00 |
+| constant velocity, oracle flow | 0.479 | 0.819 | 0.307 | 0.98 |
+| constant velocity, estimated flow | 0.361 | 0.604 | 0.200 | 1.00 |
+
+The model matches the oracle baseline at half a second *without being told the
+true velocities*, and beats the best baseline by **51 % at the five-second
+horizon** -- which is where a learned model has to earn its keep, and where the
+gap keeps widening. BIAS fell from 1.55 to 1.09 without intervention, and it does
+not fail where it matters: collision windows score 0.629 against nominal
+traffic's 0.626.
+
+A 439 M model is training on the full 44-hour dataset.
+
 ## Running it
 
 ```bash

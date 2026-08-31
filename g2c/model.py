@@ -346,11 +346,13 @@ class OccupancyForecaster(nn.Module):
             occ, flow = self.head(y, skip_rep)
         # Occupancy logits are produced in float32, deliberately, even under
         # autocast.  The residual base is log(1e-5 / (1 - 1e-5)) = -11.5, and
-        # bfloat16's resolution at that magnitude is 0.044 -- so in bf16 every
-        # correction the network tries to make smaller than that is rounded
-        # away, the occupancy term freezes at its initial value, and the model
-        # sits at persistence forever while every other loss term trains
-        # normally.  That is exactly what it did before this cast.
+        # bfloat16's resolution at that magnitude is 0.044, so corrections
+        # smaller than that would be rounded away.  Measured, this turned out
+        # *not* to be what froze early training -- rounding the logits to
+        # bfloat16 changes the loss trajectory by under 0.2 %, and the real
+        # causes were in the loss (see losses.py).  The cast stays anyway: a
+        # -11.5 additive offset is not something to leave at bfloat16
+        # resolution, and it costs nothing.
         occ = occ.float().view(B, cfg.t_out, cfg.n_groups, H, W)
         if cfg.residual_from_last:
             # A tighter clamp keeps the floor this puts under every empty cell

@@ -9,6 +9,7 @@ import lightning as L
 import torch
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from lightning.pytorch.callbacks.progress import TQDMProgressBar
+from lightning.pytorch.plugins.environments import LightningEnvironment
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from g2c.losses import LossWeights  # noqa: E402
@@ -106,9 +107,16 @@ def main():
                         monitor="validation/soft_iou_mean", mode="max", save_top_k=2,
                         save_last=True, auto_insert_metric_name=False),
     ]
+    # Without an explicit environment, Lightning detects SLURM and takes the
+    # world size from SLURM_NTASKS -- which is 1, because the job deliberately
+    # does not use srun (srun binds the task to a single CPU and starves the data
+    # loader).  The result was two allocated GPUs and a world size of one.
+    # LightningEnvironment makes Lightning launch its own processes, one per
+    # device, and requeue is handled by resuming from last.ckpt regardless.
+    plugins = [LightningEnvironment()] if args.devices > 1 else []
     trainer = L.Trainer(
         max_epochs=args.epochs, max_steps=args.max_steps if args.max_steps > 0 else -1,
-        accelerator="gpu", devices=args.devices,
+        accelerator="gpu", devices=args.devices, plugins=plugins,
         strategy="ddp_find_unused_parameters_true" if args.devices > 1 else "auto",
         precision=args.precision, logger=logger, callbacks=callbacks,
         accumulate_grad_batches=args.accumulate, gradient_clip_val=1.0,

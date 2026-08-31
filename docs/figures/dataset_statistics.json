@@ -1,21 +1,21 @@
 {
-  "episodes": 129,
-  "frames": 114780,
+  "episodes": 355,
+  "frames": 318180,
   "frame_dt_s": 0.5,
-  "windows": 112329,
-  "occupied_cell_fraction_mean": 0.019596331736290554,
-  "max_cell_coverage": 1.290196180343628,
-  "vehicles_per_frame_mean": 171.90390014648438,
-  "max_speed_m_s": 35.361328125,
+  "windows": 311435,
+  "occupied_cell_fraction_mean": 0.02007525185837246,
+  "max_cell_coverage": 1.317647099494934,
+  "vehicles_per_frame_mean": 176.20809936523438,
+  "max_speed_m_s": 37.8515625,
   "scenario_counts": {
-    "nominal": 53256,
-    "collision": 16427,
-    "low_speed_contact": 14178,
-    "incident_traffic": 28468
+    "nominal": 138320,
+    "collision": 48746,
+    "low_speed_contact": 38698,
+    "incident_traffic": 85671
   },
   "mean_vehicle_area_m2": [
-    9.9304780960083,
-    14.897191047668457,
-    1.4780843257904053
+    10.00348949432373,
+    14.916254997253418,
+    1.479575514793396
   ]
 }

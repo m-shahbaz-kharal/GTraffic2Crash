@@ -36,8 +36,19 @@ from .tensorize import FLOW_SCALE, GROUP_NAMES, GROUP_RGB
 # Lightning stores the model and loss configurations in the checkpoint's
 # hyper-parameters, and torch.load has defaulted to weights_only=True since
 # PyTorch 2.6 -- which refuses to unpickle them.  Without this, both resuming a
-# preempted run and loading a checkpoint for evaluation fail.
-torch.serialization.add_safe_globals([ModelConfig, LossWeights])
+# preempted run and loading a checkpoint for evaluation fail.  The numpy entries
+# are needed because the per-class mean vehicle area is a numpy array; that one
+# surfaced only when the evaluation actually tried to load a real checkpoint.
+_SAFE = [ModelConfig, LossWeights, np.ndarray, np.dtype]
+for _name in ("_reconstruct", "scalar"):
+    _fn = getattr(np._core.multiarray, _name, None)
+    if _fn is not None:
+        _SAFE.append(_fn)
+for _dt in ("Float32DType", "Float64DType", "Int64DType"):
+    _t = getattr(np.dtypes, _dt, None)
+    if _t is not None:
+        _SAFE.append(_t)
+torch.serialization.add_safe_globals(_SAFE)
 
 
 class G2CDataModule(L.LightningDataModule):
@@ -110,6 +121,9 @@ class Forecaster(L.LightningModule):
             valid_mask = torch.ones(model_config.rows, model_config.cols)
         if mean_vehicle_area is None:
             mean_vehicle_area = torch.ones(model_config.n_groups) * 10.0
+        # Stored as a plain list in the hyper-parameters; a numpy array there is
+        # what made checkpoints unloadable under weights_only.
+        mean_vehicle_area = [float(v) for v in np.asarray(mean_vehicle_area).ravel()]
         self.register_buffer("static", static_channels)
         self.register_buffer("valid", valid_mask)
         self.register_buffer("mean_vehicle_area", torch.as_tensor(mean_vehicle_area))

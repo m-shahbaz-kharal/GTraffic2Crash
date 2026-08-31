@@ -34,9 +34,11 @@ slurm/             cluster jobs
 
 ## The data
 
-CARLA 0.9.15, Town05, 400 episodes of 7.5 minutes -- 50 hours of traffic.
-Half the episodes are nominal; half carry 6-14 % bad actors (speeding,
-red-light running, erratic weaving, tailgating).
+CARLA 0.9.15, Town05, 400 episodes of 7.5 minutes -- **50 hours of traffic,
+360,480 frames, roughly 356,000 training windows**, of which about 15 % contain a
+real collision. Half the episodes are nominal; half carry 6-14 % bad actors
+(speeding, red-light running, erratic weaving, tailgating). Forty CARLA servers
+generated it in under two hours on the idle V100 nodes.
 
 Recorded as **raw vehicle state** at 10 Hz, then rasterised to a **144 x 160
 grid of 4 m cells** at 2 Hz. Keeping the raw layer means grid resolution, time

@@ -22,6 +22,9 @@ export WANDB_MODE=offline WANDB_DIR="$REPO/runs" OMP_NUM_THREADS=6
 # silently throttles the data loader to a single worker.
 export SRUN_CPUS_PER_TASK=${SLURM_CPUS_PER_TASK:-8}
 export TORCH_NCCL_ASYNC_ERROR_HANDLING=1
-srun .venv/bin/python scripts/train.py --run ddp_smoke --size small --devices 2 \
+# No srun: inside a batch job it binds the task to a single CPU, which starves
+# the data loader (AveCPU showed 1.1 cores of a 14-core allocation).  Lightning
+# spawns its own worker processes for multi-GPU on one node, so srun buys nothing.
+.venv/bin/python scripts/train.py --run ddp_smoke --size small --devices 2 \
     --batch-size 4 --epochs 1 --max-steps 60 --warmup-steps 10 --workers 4 \
     --limit-val-batches 8 --train-stride 40 --val-stride 40

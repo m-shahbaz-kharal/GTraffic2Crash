@@ -26,6 +26,9 @@ nvidia-smi --query-gpu=index,name --format=csv,noheader
 OUT="$REPO/runs/pilot_small"
 RESUME=""
 [ -f "$OUT/checkpoints/last.ckpt" ] && RESUME="--resume $OUT/checkpoints/last.ckpt"
-srun .venv/bin/python scripts/train.py --run pilot_small --size small --devices 1 \
+# No srun: inside a batch job it binds the task to a single CPU, which starves
+# the data loader (AveCPU showed 1.1 cores of a 14-core allocation).  Lightning
+# spawns its own worker processes for multi-GPU on one node, so srun buys nothing.
+.venv/bin/python scripts/train.py --run pilot_small --size small --devices 1 \
     --batch-size 8 --epochs 6 --learning-rate 6e-4 --warmup-steps 400 \
     --workers 8 --train-stride 2 --val-stride 5 --val-check-interval 0.08 --limit-val-batches 120 $RESUME

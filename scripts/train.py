@@ -94,8 +94,10 @@ def main():
         LearningRateMonitor(logging_interval="step"),
         # Two checkpoints: the best by validation quality, and the latest, so a
         # preempted or timed-out job resumes without losing an epoch.
+        # The monitored metric name contains a slash, which is a hazard inside a
+        # checkpoint filename, so the filename carries only epoch and step.
         ModelCheckpoint(dirpath=os.path.join(out, "checkpoints"),
-                        filename="best-{epoch:03d}-{validation/soft_iou_mean:.4f}",
+                        filename="best-epoch{epoch:03d}-step{step:07d}",
                         monitor="validation/soft_iou_mean", mode="max", save_top_k=2,
                         save_last=True, auto_insert_metric_name=False),
     ]

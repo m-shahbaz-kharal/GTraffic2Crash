@@ -46,7 +46,8 @@ if [ -f "$OUT/checkpoints/last.ckpt" ]; then
     echo "resuming from $OUT/checkpoints/last.ckpt"
 fi
 
-srun "$PY" scripts/train.py \
+# No srun: see the note in pilot.sbatch -- it pins the task to one CPU.
+"$PY" scripts/train.py \
     --run "$RUN" --size "$SIZE" --devices 2 \
     --batch-size "$BATCH" --accumulate "$ACCUM" --epochs "$EPOCHS" \
     --learning-rate "$LR" --workers 12 $RESUME $EXTRA

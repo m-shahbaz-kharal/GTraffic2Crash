@@ -35,9 +35,21 @@ BODY_W = W - 2 * MARGIN
 # ----------------------------------------------------------------- numbers
 
 def load_metrics():
-    path = os.path.join(ROOT, "runs", "base_v1", "reports", "validation.jsonl")
-    rows = [json.loads(line) for line in open(path)]
-    return rows[-1]
+    """The dedicated evaluation, not the training-time log.
+
+    scripts/evaluate.py runs the whole held-out set and refuses a split it
+    cannot verify against the run's own record; the in-training validation is
+    a capped sample of it.  So this is the number that belongs on a slide.
+    """
+    path = os.path.join(ROOT, "runs", "base_v1", "evaluation", "evaluation.json")
+    d = json.load(open(path))
+    return {
+        "headline": d["headline"]["model"],
+        "by_horizon": d["by_horizon"]["model"],
+        "baselines": {k: v for k, v in d["by_horizon"].items() if k != "model"},
+        "by_scenario": {k: v["model"] for k, v in d["by_scenario"].items()},
+        "windows": d["windows"],
+    }
 
 
 def load_dataset_stats():
@@ -363,7 +375,7 @@ def slide_results(prs, m):
     s = blank_slide(prs)
     title(s, "Results",
           "soft IoU — overlap between the forecast and what actually happened · "
-          "53 held-out episodes, 9,381 windows")
+          f"53 held-out episodes, {m['windows']:,} windows")
 
     b = m["baselines"]
     rows = [
@@ -398,14 +410,17 @@ def slide_results(prs, m):
     picture(s, os.path.join(SLIDES, "fig_horizon.png"),
             Inches(6.83), Inches(1.84), width=Inches(6.12))
 
+    count_err = 100.0 * m["headline"]["vehicle_count_relative_error_mean"]
+    crash = m["by_scenario"]["collision"]["soft_iou_mean"]
+    calm = m["by_scenario"]["nominal"]["soft_iou_mean"]
     frame = textbox(s, MARGIN, Inches(5.56), BODY_W, Inches(1.5))
     write(frame, [
         ([("The overlap is not bought by hedging.  ", True, INK),
-          ("Predicted vehicle count stays within 2.4 % of the truth across the "
-           "whole horizon.", False, INK2)], 14, False, INK2, 0),
+          (f"Predicted vehicle count stays within {count_err:.1f} % of the truth "
+           "across the whole horizon.", False, INK2)], 14, False, INK2, 0),
         ([("It holds up where it matters.  ", True, INK),
-          ("Collision episodes score 0.796 against 0.814 on nominal traffic — "
-           "two points, not the result.", False, INK2)],
+          (f"Collision episodes score {crash:.3f} against {calm:.3f} on nominal "
+           "traffic — two points, not the result.", False, INK2)],
          14, False, INK2, 16),
         ([("Measured at step 27,297 of a 32,000-step budget — 1.65 passes over "
            "the training set, 35 hours on two H100s.", False, MUTED)],
@@ -435,13 +450,16 @@ On hedging: the occupancy-forecasting literature has a known failure mode where
 a model wins overlap metrics by predicting far less area than really exists.
 PreDiff measures Earthformer's BIAS — predicted mass divided by true mass — at
 0.24 at the highest threshold; it predicts a quarter of the area it should. Ours
-runs 1.005 at +0.5 s to 1.042 at +5 s, so the overlap is real rather than
+runs BIAS_LO at +0.5 s to BIAS_HI at +5 s, so the overlap is real rather than
 purchased by shrinking the forecast. This is exactly what the count-consistency
 term in the loss was there to protect.
 
-Per-horizon soft IoU: 0.920, 0.895, 0.870, 0.844, 0.817, 0.790, 0.765, 0.740,
-0.715, 0.690.
-""")
+Per-horizon soft IoU: PER_HORIZON.
+Per-horizon BIAS: PER_BIAS.
+""".replace("BIAS_LO", f"{m['by_horizon']['bias'][0]:.3f}")
+   .replace("BIAS_HI", f"{m['by_horizon']['bias'][-1]:.3f}")
+   .replace("PER_HORIZON", ", ".join(f"{v:.3f}" for v in m["by_horizon"]["soft_iou"]))
+   .replace("PER_BIAS", ", ".join(f"{v:.3f}" for v in m["by_horizon"]["bias"])))
     page_number(s, 4)
 
 
@@ -556,7 +574,8 @@ def main():
     prs.save(OUT)
     print(f"wrote {OUT}  ({len(prs.slides.__iter__.__self__._sldIdLst)} slides, "
           f"{os.path.getsize(OUT)/1e6:.1f} MB)")
-    print(f"step {metrics['step']}  soft_iou {metrics['headline']['soft_iou_mean']:.4f}")
+    print(f"{metrics['windows']:,} held-out windows  "
+          f"soft_iou {metrics['headline']['soft_iou_mean']:.4f}")
 
 
 if __name__ == "__main__":

@@ -6,15 +6,21 @@
 #SBATCH --exclude=evc46,evc47,evc48,evc49,evc50
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=320G
-#SBATCH --time=36:00:00
+#SBATCH --time=48:00:00
 #SBATCH --requeue
 #SBATCH --signal=B:USR1@120
 #SBATCH --output=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash/logs/%x-%j.out
 #SBATCH --error=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash/logs/%x-%j.out
 
-# Resumable by construction: Lightning writes `last.ckpt` every epoch and this
-# script picks it up automatically, so a requeue after preemption costs at most
-# one epoch rather than the whole run.
+# Resumable by construction: Lightning writes `last.ckpt` at every validation and
+# this script picks it up automatically.
+#
+# Note what --requeue does and does not cover.  It requeues after preemption or
+# node failure.  It does NOT requeue a job SLURM cancels for exhausting its time
+# limit -- that is terminal, and the first headline run died that way at step
+# 27,700 of 32,000 after exactly 36 hours, with nothing to restart it.  The time
+# limit is now set generously and a run that stops short simply needs this script
+# resubmitting; it will pick up last.ckpt and continue.
 set -u
 REPO=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash
 PY="$REPO/.venv/bin/python"

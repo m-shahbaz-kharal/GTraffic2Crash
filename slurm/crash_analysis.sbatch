@@ -6,7 +6,7 @@
 #SBATCH --exclude=evc46,evc47,evc48,evc49,evc50
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=140G
-#SBATCH --time=01:30:00
+#SBATCH --time=04:00:00
 #SBATCH --output=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash/logs/%x-%j.out
 #SBATCH --error=/lustre/fs1/home/mu290328/github-repos/GTraffic2Crash/logs/%x-%j.out
 set -u

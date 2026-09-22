@@ -21,6 +21,7 @@ concentrates mass at the place the crash actually happens, before it happens.
 import argparse
 import json
 import os
+import time
 import sys
 from collections import defaultdict
 
@@ -95,7 +96,16 @@ def main():
     lead = defaultdict(list)      # steps-before-impact -> occupancy at impact site
     ctrl = defaultdict(list)      # the same, at a matched control site
     truth = defaultdict(list)
-    for batch in loader:
+    t0 = time.time()
+    for n, batch in enumerate(loader):
+        # A rate line, because the first attempt at this hit its wall clock with
+        # nothing in the log to say whether it was slow or stuck.
+        if n and n % 20 == 0:
+            done = n * args.batch_size
+            rate = done / (time.time() - t0)
+            print(f"[crash] {done}/{len(idx)} windows, {rate:.1f}/s, "
+                  f"{(len(idx) - done) / max(rate, 1e-6) / 60:.1f} min left",
+                  flush=True)
         b = {k: v.to(dev) for k, v in batch.items()}
         B = b["past_occupancy"].shape[0]
         prob = torch.sigmoid(model.net(b["past_occupancy"],

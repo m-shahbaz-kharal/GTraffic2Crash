@@ -44,7 +44,25 @@ export SRUN_CPUS_PER_TASK=${SLURM_CPUS_PER_TASK:-8}
 export TORCH_NCCL_ASYNC_ERROR_HANDLING=1
 
 nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader
-echo "run=$RUN size=$SIZE batch=$BATCH accum=$ACCUM epochs=$EPOCHS lr=$LR"
+
+# SLURM allocating two GPUs does not guarantee the node hands over two: job
+# 833094 was allocated gres/gpu=2 on evc30, saw one, and died two minutes in
+# because --devices was hardcoded at 2.  Take what is actually visible and
+# raise accumulation to keep the effective batch, and therefore the schedule,
+# exactly where it was.
+GPUS=$(nvidia-smi -L | wc -l)
+if [ "$GPUS" -lt 1 ]; then
+    echo "no GPU visible; refusing to start" >&2
+    exit 1
+fi
+WANT="${WANT_GPUS:-2}"
+if [ "$GPUS" -lt "$WANT" ]; then
+    ACCUM=$(( ACCUM * WANT / GPUS ))
+    echo "only $GPUS of $WANT GPUs visible: accumulate raised to $ACCUM"
+fi
+
+echo "run=$RUN size=$SIZE gpus=$GPUS batch=$BATCH accum=$ACCUM epochs=$EPOCHS lr=$LR"
+echo "effective batch = $(( BATCH * ACCUM * GPUS ))"
 
 RESUME=""
 if [ -f "$OUT/checkpoints/last.ckpt" ]; then
@@ -54,6 +72,6 @@ fi
 
 # No srun: see the note in pilot.sbatch -- it pins the task to one CPU.
 "$PY" scripts/train.py \
-    --run "$RUN" --size "$SIZE" --devices 2 \
+    --run "$RUN" --size "$SIZE" --devices "$GPUS" \
     --batch-size "$BATCH" --accumulate "$ACCUM" --epochs "$EPOCHS" \
     --learning-rate "$LR" --workers 12 $RESUME $EXTRA

@@ -3,7 +3,7 @@
 Forecasting town-scale traffic from a bird's-eye occupancy grid, so that an
 imminent collision is visible in the forecast before it happens.
 
-The upstream project ([LCam2GlobalTraffic](../LCam2GlobalTraffic)) turns 141
+The upstream project ([LCam2GlobalTraffic](https://github.com/m-shahbaz-kharal/LCam2GlobalTraffic)) turns 141
 fixed traffic-camera images into one town-wide vehicle-occupancy grid over CARLA
 Town05. This project takes that grid as its input format and answers the next
 question: **given the last five seconds of the town, what do the next five
